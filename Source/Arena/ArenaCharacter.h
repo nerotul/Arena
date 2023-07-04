@@ -13,6 +13,7 @@ class UCameraComponent;
 class UMotionControllerComponent;
 class UAnimMontage;
 class USoundBase;
+class UHealthComponent;
 
 UCLASS(config=Game)
 class AArenaCharacter : public ACharacter
@@ -38,8 +39,9 @@ class AArenaCharacter : public ACharacter
 	//Gun mesh for third person
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 	USkeletalMeshComponent* TP_Gun;
-	
 
+	UHealthComponent* CharacterHealth;
+	
 
 public:
 	AArenaCharacter();
@@ -113,5 +115,7 @@ public:
 	/** Returns FirstPersonCameraComponent subobject **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
+
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 };
 

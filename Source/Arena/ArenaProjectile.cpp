@@ -3,6 +3,7 @@
 #include "ArenaProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 AArenaProjectile::AArenaProjectile() 
 {
@@ -36,10 +37,15 @@ AArenaProjectile::AArenaProjectile()
 void AArenaProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	// Only add impulse and destroy projectile if we hit a physics
-	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr) && OtherComp->IsSimulatingPhysics())
+	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr))
 	{
-		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
-
+		if (OtherComp->IsSimulatingPhysics())
+		{
+			OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
+		}
+		UGameplayStatics::ApplyDamage(OtherActor, 30, GetInstigatorController(), this, NULL);
+		//UGameplayStatics::ApplyPointDamage(OtherActor, 50, Hit.TraceStart, Hit, GetInstigatorController(), this, NULL);
+		
 		Destroy();
 	}
 }

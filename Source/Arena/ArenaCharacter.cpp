@@ -65,7 +65,7 @@ AArenaCharacter::AArenaCharacter()
 
 	CharacterHealth = CreateDefaultSubobject<UHealthComponent>(TEXT("CharacterHealth"));
 
-	CharacterHealth->OnCharacterDead.AddDynamic(this, &AArenaCharacter::KillCharacter);
+	CharacterHealth->OnCharacterDead.AddDynamic(this, &AArenaCharacter::KillCharacter_OnServer);
 }
 
 void AArenaCharacter::BeginPlay()
@@ -122,29 +122,45 @@ void AArenaCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInp
 
 float AArenaCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	CharacterHealth->ChangeHealthValue(-DamageAmount);
+	if (bIsAlive)
+	{
+		float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+		CharacterHealth->ChangeHealthValue(-DamageAmount);
 
-	return ActualDamage;
+		return ActualDamage;
+	}
+	else
+	{
+		return 0;
+	}
 }
 
-void AArenaCharacter::KillCharacter()
+void AArenaCharacter::KillCharacter_OnServer_Implementation()
 {
+	KillCharacter_Multicast();
+}
+
+void AArenaCharacter::KillCharacter_Multicast_Implementation()
+{
+	bIsAlive = false;
+
 	USkeletalMeshComponent* TP_Mesh = ACharacter::GetMesh();
 
-	//GetController()->Destroy();
-	//GetCapsuleComponent()->DestroyComponent();
-	Mesh1P->DestroyComponent();
-	FP_Gun->DestroyComponent();
+	IsLocallyControlled() ? GetController()->UnPossess() : NULL;
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	TP_Mesh->SetSimulatePhysics(true);
 	TP_Mesh->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
-
-
+	Mesh1P->DestroyComponent();
+	FP_Gun->DestroyComponent();
 	//Destroy();
-
 }
 
 void AArenaCharacter::OnFire_OnServer_Implementation()
+{
+	bIsAlive ? OnFire_Multicast() : NULL;
+}
+
+void AArenaCharacter::OnFire_Multicast_Implementation()
 {
 	// try and fire a projectile
 	if (ProjectileClass != nullptr)

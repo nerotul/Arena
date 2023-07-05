@@ -41,8 +41,8 @@ class AArenaCharacter : public ACharacter
 	USkeletalMeshComponent* TP_Gun;
 
 	UHealthComponent* CharacterHealth;
-	
 
+	
 public:
 	AArenaCharacter();
 
@@ -82,7 +82,10 @@ protected:
 	
 	/** Fires a projectile. */
 	UFUNCTION(Server, Reliable)
-	void OnFire_OnServer();
+		void OnFire_OnServer();
+
+	UFUNCTION(NetMulticast, Reliable)
+		void OnFire_Multicast();
 
 	/** Handles moving forward/backward */
 	void MoveForward(float Val);
@@ -118,7 +121,11 @@ public:
 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
-	UFUNCTION()
-		void KillCharacter();
+	UFUNCTION(Server, Reliable)
+		void KillCharacter_OnServer();
+	UFUNCTION(NetMulticast, Reliable)
+		void KillCharacter_Multicast();
+
+	bool bIsAlive = true;
 };
 

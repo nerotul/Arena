@@ -64,6 +64,8 @@ AArenaCharacter::AArenaCharacter()
 	// are set in the derived blueprint asset named MyCharacter to avoid direct content references in C++.
 
 	CharacterHealth = CreateDefaultSubobject<UHealthComponent>(TEXT("CharacterHealth"));
+
+	CharacterHealth->OnCharacterDead.AddDynamic(this, &AArenaCharacter::KillCharacter);
 }
 
 void AArenaCharacter::BeginPlay()
@@ -124,6 +126,22 @@ float AArenaCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 	CharacterHealth->ChangeHealthValue(-DamageAmount);
 
 	return ActualDamage;
+}
+
+void AArenaCharacter::KillCharacter()
+{
+	USkeletalMeshComponent* TP_Mesh = ACharacter::GetMesh();
+
+	//GetController()->Destroy();
+	//GetCapsuleComponent()->DestroyComponent();
+	Mesh1P->DestroyComponent();
+	FP_Gun->DestroyComponent();
+	TP_Mesh->SetSimulatePhysics(true);
+	TP_Mesh->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+
+
+	//Destroy();
+
 }
 
 void AArenaCharacter::OnFire_OnServer_Implementation()

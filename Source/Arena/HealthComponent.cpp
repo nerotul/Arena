@@ -32,14 +32,33 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	// ...
 }
 
-float UHealthComponent::GetCurrentShield()
+float UHealthComponent::GetCurrentArmor()
 {
-	return CurrentShield;
+	return CurrentArmor;
 }
 
-void UHealthComponent::ChangeShieldValue(float ChangeValue)
+void UHealthComponent::ChangeArmorValue(float ChangeValue)
 {
-	CurrentShield += ChangeValue;
+	bool bIsDamage = (ChangeValue < 0);
+	
+	if(bIsDamage)
+	{
+		if ((GetCurrentArmor() + ChangeValue) < 0)
+		{
+			CurrentArmor += ChangeValue;
+			ChangeHealthValue(CurrentArmor);
+			CurrentArmor = 0.0f;
+		}
+		else
+		{
+			CurrentArmor += ChangeValue;
+		}
+	}
+	else
+	{
+		(GetCurrentArmor() + ChangeValue) > MaxArmor ? CurrentArmor = MaxArmor : CurrentArmor += ChangeValue;
+	}
+	
 }
 
 float UHealthComponent::GetCurrentHealth()
@@ -49,6 +68,22 @@ float UHealthComponent::GetCurrentHealth()
 
 void UHealthComponent::ChangeHealthValue(float ChangeValue)
 {
-	CurrentHealth += ChangeValue;
+	bool bIsDamage = (ChangeValue < 0);
+
+	if (bIsDamage)
+	{
+		GetCurrentArmor() > 0 ? ChangeArmorValue(ChangeValue) : CurrentHealth += ChangeValue;
+
+		if (CurrentHealth <= 0)
+		{
+			OnCharacterDead.Broadcast();
+		}
+	}
+	else
+	{
+		(GetCurrentHealth() + ChangeValue) > MaxHealth ? CurrentHealth = MaxHealth : CurrentHealth += ChangeValue;
+		
+	}
+	
 }
 

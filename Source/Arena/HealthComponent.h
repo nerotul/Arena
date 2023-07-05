@@ -7,6 +7,8 @@
 #include "HealthComponent.generated.h"
 
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCharacterDead);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ARENA_API UHealthComponent : public UActorComponent
 {
@@ -20,23 +22,24 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	float MaxShield = 100;
-	float CurrentShield = 100;
-	float ShieldRecoveryRate = 1;
+	float MaxArmor = 100.0f;
+	float CurrentArmor = 100.0f;
 
-	float MaxHealth = 160;
-	float CurrentHealth = 133;
+	float MaxHealth = 100.0f;
+	float CurrentHealth = 100.0f;
 
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	float GetCurrentShield();
-	void ChangeShieldValue(float ChangeValue);
+	UFUNCTION(BlueprintCallable)
+		float GetCurrentArmor();
+	void ChangeArmorValue(float ChangeValue);
 
 	UFUNCTION(BlueprintCallable)
 		float GetCurrentHealth();
 	void ChangeHealthValue(float ChangeValue);
 
+	FOnCharacterDead OnCharacterDead;
 		
 };

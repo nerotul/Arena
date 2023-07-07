@@ -13,6 +13,9 @@ class AArenaGameMode : public AGameModeBase
 
 public:
 	AArenaGameMode();
+
+	void RespawnCharacter(AController* CharacterController);
+
 };
 
 

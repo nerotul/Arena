@@ -9,6 +9,7 @@
 #include "GameFramework/InputSettings.h"
 #include "Kismet/GameplayStatics.h"
 #include "HealthComponent.h"
+#include "ArenaGameMode.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -65,7 +66,7 @@ AArenaCharacter::AArenaCharacter()
 
 	CharacterHealth = CreateDefaultSubobject<UHealthComponent>(TEXT("CharacterHealth"));
 
-	CharacterHealth->OnCharacterDead.AddDynamic(this, &AArenaCharacter::KillCharacter_OnServer);
+	CharacterHealth->OnCharacterDead.AddDynamic(this, &AArenaCharacter::MulticastKillCharacter);
 }
 
 void AArenaCharacter::BeginPlay()
@@ -78,18 +79,7 @@ void AArenaCharacter::BeginPlay()
 	TP_Gun->AttachToComponent(ACharacter::GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("WeaponSocket"));
 
 	// Show or hide the gun and hands based on whether or not pawn is locally controlled.
-	if (IsLocallyControlled())
-	{
-		Mesh1P->SetHiddenInGame(false, true);
-		FP_Gun->SetHiddenInGame(false, true);
-		TP_Gun->SetHiddenInGame(true, true);
-	}
-	else
-	{
-		Mesh1P->SetHiddenInGame(true, true);
-		FP_Gun->SetHiddenInGame(true, true);
-		TP_Gun->SetHiddenInGame(false, true);
-	}
+	SetMeshVisibility();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -105,7 +95,7 @@ void AArenaCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInp
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
 	// Bind fire event
-	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AArenaCharacter::OnFire_OnServer);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AArenaCharacter::ServerOnFire);
 
 	// Bind movement events
 	PlayerInputComponent->BindAxis("MoveForward", this, &AArenaCharacter::MoveForward);
@@ -118,6 +108,75 @@ void AArenaCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInp
 	PlayerInputComponent->BindAxis("TurnRate", this, &AArenaCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AArenaCharacter::LookUpAtRate);
+	
+	
+	// Calling it here because BeginPlay is too fast when respawning Listen-Server
+	SetMeshVisibility();
+}
+
+void AArenaCharacter::SetMeshVisibility()
+{
+	if (IsLocallyControlled())
+	{
+		Mesh1P->SetHiddenInGame(false, true);
+		FP_Gun->SetHiddenInGame(false, true);
+		TP_Gun->SetHiddenInGame(true, true);
+	}
+	else
+	{
+		Mesh1P->SetHiddenInGame(true, true);
+		FP_Gun->SetHiddenInGame(true, true);
+		TP_Gun->SetHiddenInGame(false, true);
+	}
+}
+
+void AArenaCharacter::ServerOnFire_Implementation()
+{
+	if (bIsAlive)
+	{
+		// try and fire a projectile
+		if (ProjectileClass != nullptr)
+		{
+			UWorld* const World = GetWorld();
+			if (World != nullptr)
+			{
+				const FRotator SpawnRotation = GetControlRotation();
+				// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
+				const FVector SpawnLocation = ((FP_MuzzleLocation != nullptr) ? FP_MuzzleLocation->GetComponentLocation() : GetActorLocation()) + SpawnRotation.RotateVector(GunOffset);
+
+				//Set Spawn Collision Handling Override
+				FActorSpawnParameters ActorSpawnParams;
+				ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+
+				// spawn the projectile at the muzzle
+				World->SpawnActor<AArenaProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+			}
+		}
+
+		MulticastOnFireFX();
+	}
+}
+
+void AArenaCharacter::MulticastOnFireFX_Implementation()
+{
+	// try and play the sound if specified
+	if (FireSound != nullptr)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+	}
+
+	// try and play a firing animation if specified
+	if (FireAnimation != nullptr)
+	{
+		// Get the animation object for the arms mesh
+		UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
+		if (AnimInstance != nullptr)
+		{
+			AnimInstance->Montage_Play(FireAnimation, 1.f);
+		}
+	}
+
+
 }
 
 float AArenaCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -135,68 +194,33 @@ float AArenaCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 	}
 }
 
-void AArenaCharacter::KillCharacter_OnServer_Implementation()
-{
-	KillCharacter_Multicast();
-}
-
-void AArenaCharacter::KillCharacter_Multicast_Implementation()
+void AArenaCharacter::MulticastKillCharacter_Implementation()
 {
 	bIsAlive = false;
 
 	USkeletalMeshComponent* TP_Mesh = ACharacter::GetMesh();
 
-	IsLocallyControlled() ? GetController()->UnPossess() : NULL;
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	TP_Mesh->SetSimulatePhysics(true);
 	TP_Mesh->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	Mesh1P->DestroyComponent();
 	FP_Gun->DestroyComponent();
-	//Destroy();
-}
+	GetWorldTimerManager().SetTimer(DestroyActorHandle, this, &AArenaCharacter::CallDestroy, 5.0f, false);
 
-void AArenaCharacter::OnFire_OnServer_Implementation()
-{
-	bIsAlive ? OnFire_Multicast() : NULL;
-}
-
-void AArenaCharacter::OnFire_Multicast_Implementation()
-{
-	// try and fire a projectile
-	if (ProjectileClass != nullptr)
+	if (HasAuthority())
 	{
-		UWorld* const World = GetWorld();
-		if (World != nullptr)
+		AGameModeBase* GM = GetWorld()->GetAuthGameMode();
+		if (AArenaGameMode* GameMode = Cast<AArenaGameMode>(GM))
 		{
-			const FRotator SpawnRotation = GetControlRotation();
-			// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
-			const FVector SpawnLocation = ((FP_MuzzleLocation != nullptr) ? FP_MuzzleLocation->GetComponentLocation() : GetActorLocation()) + SpawnRotation.RotateVector(GunOffset);
-
-			//Set Spawn Collision Handling Override
-			FActorSpawnParameters ActorSpawnParams;
-			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
-
-			// spawn the projectile at the muzzle
-			World->SpawnActor<AArenaProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+			AController* Test = GetController();
+			GameMode->RespawnCharacter(GetController());
 		}
 	}
+}
 
-	// try and play the sound if specified
-	if (FireSound != nullptr)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
-	}
-
-	// try and play a firing animation if specified
-	if (FireAnimation != nullptr)
-	{
-		// Get the animation object for the arms mesh
-		UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
-		if (AnimInstance != nullptr)
-		{
-			AnimInstance->Montage_Play(FireAnimation, 1.f);
-		}
-	}
+void AArenaCharacter::CallDestroy()
+{
+	Destroy();
 }
 
 void AArenaCharacter::MoveForward(float Value)

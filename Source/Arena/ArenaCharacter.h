@@ -80,12 +80,22 @@ public:
 
 protected:
 	
+	void SetMeshVisibility();
+
 	/** Fires a projectile. */
 	UFUNCTION(Server, Reliable)
-		void OnFire_OnServer();
+		void ServerOnFire();
+	UFUNCTION(NetMulticast, Unreliable)
+		void MulticastOnFireFX();
+
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 	UFUNCTION(NetMulticast, Reliable)
-		void OnFire_Multicast();
+		void MulticastKillCharacter();
+
+	void CallDestroy();
+
+	FTimerHandle DestroyActorHandle;
 
 	/** Handles moving forward/backward */
 	void MoveForward(float Val);
@@ -117,14 +127,6 @@ public:
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
 	/** Returns FirstPersonCameraComponent subobject **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
-
-
-	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-
-	UFUNCTION(Server, Reliable)
-		void KillCharacter_OnServer();
-	UFUNCTION(NetMulticast, Reliable)
-		void KillCharacter_Multicast();
 
 	bool bIsAlive = true;
 };

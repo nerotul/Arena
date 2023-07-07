@@ -4,6 +4,7 @@
 #include "ArenaHUD.h"
 #include "ArenaCharacter.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Engine/Engine.h"
 
 AArenaGameMode::AArenaGameMode()
 	: Super()
@@ -14,4 +15,21 @@ AArenaGameMode::AArenaGameMode()
 
 	// use our custom HUD class
 	HUDClass = AArenaHUD::StaticClass();
+}
+
+void AArenaGameMode::RespawnCharacter(AController* CharacterController)
+{
+	if (CharacterController)
+	{
+		if (HasAuthority())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("IN RESPAWN"));
+			FVector Location = FVector(-350, -100, 265);
+			APawn* Pawn = GetWorld()->SpawnActor<APawn>(DefaultPawnClass, Location, FRotator::ZeroRotator);
+			if (Pawn)
+			{
+				CharacterController->Possess(Pawn);
+			}
+		}
+	}
 }

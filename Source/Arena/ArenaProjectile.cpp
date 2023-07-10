@@ -39,12 +39,16 @@ void AArenaProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, U
 	// Only add impulse and destroy projectile if we hit a physics
 	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr))
 	{
-		if (OtherComp->IsSimulatingPhysics())
+		if (HasAuthority())
 		{
-			OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
+			if (OtherComp->IsSimulatingPhysics())
+			{
+				OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
+			}
+			UGameplayStatics::ApplyDamage(OtherActor, 30, GetInstigatorController(), this, NULL);
+			//UGameplayStatics::ApplyPointDamage(OtherActor, 50, Hit.TraceStart, Hit, GetInstigatorController(), this, NULL);
+
 		}
-		UGameplayStatics::ApplyDamage(OtherActor, 30, GetInstigatorController(), this, NULL);
-		//UGameplayStatics::ApplyPointDamage(OtherActor, 50, Hit.TraceStart, Hit, GetInstigatorController(), this, NULL);
 		
 		Destroy();
 	}

@@ -2,6 +2,7 @@
 
 
 #include "HealthComponent.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent()
@@ -10,8 +11,9 @@ UHealthComponent::UHealthComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	//SetIsReplicated(true);
 	// ...
+
+	SetIsReplicated(true);
 }
 
 
@@ -49,10 +51,12 @@ void UHealthComponent::ChangeArmorValue(float ChangeValue)
 			CurrentArmor += ChangeValue;
 			ChangeHealthValue(CurrentArmor);
 			CurrentArmor = 0.0f;
+
 		}
 		else
 		{
 			CurrentArmor += ChangeValue;
+
 		}
 	}
 	else
@@ -88,3 +92,11 @@ void UHealthComponent::ChangeHealthValue(float ChangeValue)
 	
 }
 
+void UHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UHealthComponent, CurrentHealth);
+	DOREPLIFETIME(UHealthComponent, CurrentArmor);
+
+}

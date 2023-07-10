@@ -9,6 +9,7 @@
 #include "GameFramework/InputSettings.h"
 #include "Kismet/GameplayStatics.h"
 #include "HealthComponent.h"
+#include "InventoryComponent.h"
 #include "ArenaGameMode.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
@@ -65,8 +66,9 @@ AArenaCharacter::AArenaCharacter()
 	// are set in the derived blueprint asset named MyCharacter to avoid direct content references in C++.
 
 	CharacterHealth = CreateDefaultSubobject<UHealthComponent>(TEXT("CharacterHealth"));
-
 	CharacterHealth->OnCharacterDead.AddDynamic(this, &AArenaCharacter::MulticastKillCharacter);
+
+	CharacterInventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("CharacterInventory"));
 }
 
 void AArenaCharacter::BeginPlay()
@@ -132,7 +134,7 @@ void AArenaCharacter::SetMeshVisibility()
 
 void AArenaCharacter::ServerOnFire_Implementation()
 {
-	if (bIsAlive)
+	if (bIsAlive && CharacterInventory->AvailableAmmo > 0)
 	{
 		// try and fire a projectile
 		if (ProjectileClass != nullptr)
@@ -152,6 +154,8 @@ void AArenaCharacter::ServerOnFire_Implementation()
 				World->SpawnActor<AArenaProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
 			}
 		}
+
+		CharacterInventory->AvailableAmmo -= 1;
 
 		MulticastOnFireFX();
 	}

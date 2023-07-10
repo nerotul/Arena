@@ -14,6 +14,7 @@ class UMotionControllerComponent;
 class UAnimMontage;
 class USoundBase;
 class UHealthComponent;
+class UInventoryComponent;
 
 UCLASS(config=Game)
 class AArenaCharacter : public ACharacter
@@ -39,8 +40,6 @@ class AArenaCharacter : public ACharacter
 	//Gun mesh for third person
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 	USkeletalMeshComponent* TP_Gun;
-
-	UHealthComponent* CharacterHealth;
 
 	
 public:
@@ -129,5 +128,12 @@ public:
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
 	bool bIsAlive = true;
+
+	UPROPERTY(BlueprintReadOnly)
+		UHealthComponent* CharacterHealth;
+
+	UPROPERTY(BlueprintReadOnly)
+		UInventoryComponent* CharacterInventory;
+
 };
 

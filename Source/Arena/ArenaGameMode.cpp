@@ -23,7 +23,7 @@ void AArenaGameMode::RespawnCharacter(AController* CharacterController)
 	{
 		if (HasAuthority())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("IN RESPAWN"));
+			UE_LOG(LogTemp, Warning, TEXT("Respawning Character"));
 			FVector Location = FVector(-350, -100, 265);
 			APawn* Pawn = GetWorld()->SpawnActor<APawn>(DefaultPawnClass, Location, FRotator::ZeroRotator);
 			if (Pawn)

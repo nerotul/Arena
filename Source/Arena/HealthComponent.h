@@ -9,7 +9,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCharacterDead);
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(BlueprintType, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ARENA_API UHealthComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -23,9 +23,11 @@ protected:
 	virtual void BeginPlay() override;
 
 	float MaxArmor = 100.0f;
+	UPROPERTY(Replicated)
 	float CurrentArmor = 100.0f;
 
 	float MaxHealth = 100.0f;
+	UPROPERTY(Replicated)
 	float CurrentHealth = 100.0f;
 
 public:	

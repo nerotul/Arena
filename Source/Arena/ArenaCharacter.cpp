@@ -11,6 +11,8 @@
 #include "HealthComponent.h"
 #include "InventoryComponent.h"
 #include "ArenaGameMode.h"
+#include "Weapon.h"
+
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -49,9 +51,9 @@ AArenaCharacter::AArenaCharacter()
 	// FP_Gun->SetupAttachment(Mesh1P, TEXT("GripPoint"));
 	FP_Gun->SetupAttachment(RootComponent);
 
-	FP_MuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzleLocation"));
-	FP_MuzzleLocation->SetupAttachment(FP_Gun);
-	FP_MuzzleLocation->SetRelativeLocation(FVector(0.2f, 48.4f, -10.6f));
+	//FP_MuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzleLocation"));
+	//FP_MuzzleLocation->SetupAttachment(FP_Gun);
+	//FP_MuzzleLocation->SetRelativeLocation(FVector(0.2f, 48.4f, -10.6f));
 
 	// Create third person gun mesh component
 	TP_Gun = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("TP_Gun"));
@@ -81,6 +83,7 @@ void AArenaCharacter::BeginPlay()
 	TP_Gun->AttachToComponent(ACharacter::GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("WeaponSocket"));
 
 	// Show or hide the gun and hands based on whether or not pawn is locally controlled.
+	InitWeapon();
 	SetMeshVisibility();
 }
 
@@ -116,6 +119,27 @@ void AArenaCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInp
 	SetMeshVisibility();
 }
 
+void AArenaCharacter::InitWeapon()
+{
+	if (WeaponClass)
+	{
+		FActorSpawnParameters ActorSpawnParams;
+		ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+
+		FAttachmentTransformRules Rule(EAttachmentRule::SnapToTarget, false);
+
+		CharacterWeapon = GetWorld()->SpawnActor<AWeapon>(WeaponClass, ActorSpawnParams);
+
+		if(CharacterWeapon)
+		{
+			CharacterWeapon->AttachToComponent(Mesh1P, Rule, FName("GripPoint"));
+			//FP_Gun->SetSkeletalMesh(CharacterWeapon->FPWeaponMesh);
+			TP_Gun->SetSkeletalMesh(CharacterWeapon->FPWeaponMesh);
+
+		}
+	}
+}
+
 void AArenaCharacter::SetMeshVisibility()
 {
 	if (IsLocallyControlled())
@@ -136,28 +160,11 @@ void AArenaCharacter::ServerOnFire_Implementation()
 {
 	if (bIsAlive && CharacterInventory->AvailableAmmo > 0)
 	{
-		// try and fire a projectile
-		if (ProjectileClass != nullptr)
-		{
-			UWorld* const World = GetWorld();
-			if (World != nullptr)
-			{
-				const FRotator SpawnRotation = GetControlRotation();
-				// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
-				const FVector SpawnLocation = ((FP_MuzzleLocation != nullptr) ? FP_MuzzleLocation->GetComponentLocation() : GetActorLocation()) + SpawnRotation.RotateVector(GunOffset);
-
-				//Set Spawn Collision Handling Override
-				FActorSpawnParameters ActorSpawnParams;
-				ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
-
-				// spawn the projectile at the muzzle
-				World->SpawnActor<AArenaProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
-			}
-		}
-
 		CharacterInventory->AvailableAmmo -= 1;
 
-		MulticastOnFireFX();
+		//MulticastOnFireFX();
+
+		CharacterWeapon->Fire(GetControlRotation());
 	}
 }
 
@@ -224,6 +231,7 @@ void AArenaCharacter::MulticastKillCharacter_Implementation()
 
 void AArenaCharacter::CallDestroy()
 {
+	CharacterWeapon->Destroy();
 	Destroy();
 }
 

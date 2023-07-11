@@ -135,5 +135,13 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 		UInventoryComponent* CharacterInventory;
 
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+		TSubclassOf<class AWeapon> WeaponClass;
+
+	AWeapon* CharacterWeapon;
+
+	void InitWeapon();
+
+
 };
 

@@ -12,6 +12,7 @@
 #include "InventoryComponent.h"
 #include "ArenaGameMode.h"
 #include "Weapon.h"
+#include "Particles/ParticleSystem.h"
 
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
@@ -43,18 +44,6 @@ AArenaCharacter::AArenaCharacter()
 	Mesh1P->SetRelativeRotation(FRotator(1.9f, -19.19f, 5.2f));
 	Mesh1P->SetRelativeLocation(FVector(-0.5f, -4.4f, -155.7f));
 
-	// Create a gun mesh component
-	FP_Gun = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FP_Gun"));
-	FP_Gun->SetOnlyOwnerSee(false);			// otherwise won't be visible in the multiplayer
-	FP_Gun->bCastDynamicShadow = false;
-	FP_Gun->CastShadow = false;
-	// FP_Gun->SetupAttachment(Mesh1P, TEXT("GripPoint"));
-	FP_Gun->SetupAttachment(RootComponent);
-
-	//FP_MuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzleLocation"));
-	//FP_MuzzleLocation->SetupAttachment(FP_Gun);
-	//FP_MuzzleLocation->SetRelativeLocation(FVector(0.2f, 48.4f, -10.6f));
-
 	// Create third person gun mesh component
 	TP_Gun = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("TP_Gun"));
 	TP_Gun->SetOnlyOwnerSee(false);
@@ -79,7 +68,6 @@ void AArenaCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
-	FP_Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
 	TP_Gun->AttachToComponent(ACharacter::GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("WeaponSocket"));
 
 	// Show or hide the gun and hands based on whether or not pawn is locally controlled.
@@ -133,7 +121,6 @@ void AArenaCharacter::InitWeapon()
 		if(CharacterWeapon)
 		{
 			CharacterWeapon->AttachToComponent(Mesh1P, Rule, FName("GripPoint"));
-			//FP_Gun->SetSkeletalMesh(CharacterWeapon->FPWeaponMesh);
 			TP_Gun->SetSkeletalMesh(CharacterWeapon->FPWeaponMesh);
 
 		}
@@ -145,35 +132,31 @@ void AArenaCharacter::SetMeshVisibility()
 	if (IsLocallyControlled())
 	{
 		Mesh1P->SetHiddenInGame(false, true);
-		FP_Gun->SetHiddenInGame(false, true);
 		TP_Gun->SetHiddenInGame(true, true);
 	}
 	else
 	{
 		Mesh1P->SetHiddenInGame(true, true);
-		FP_Gun->SetHiddenInGame(true, true);
 		TP_Gun->SetHiddenInGame(false, true);
 	}
 }
 
 void AArenaCharacter::ServerOnFire_Implementation()
 {
-	if (bIsAlive && CharacterInventory->AvailableAmmo > 0)
+	if (bIsAlive && CharacterWeapon && CharacterWeapon->CurrentMagazineAmmo > 0)
 	{
-		CharacterInventory->AvailableAmmo -= 1;
-
-		//MulticastOnFireFX();
-
 		CharacterWeapon->Fire(GetControlRotation());
+		MulticastOnFireFX();
+
 	}
 }
 
 void AArenaCharacter::MulticastOnFireFX_Implementation()
 {
 	// try and play the sound if specified
-	if (FireSound != nullptr)
+	if (CharacterWeapon->FireSound != nullptr)
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), CharacterWeapon->FireSound, GetActorLocation());
 	}
 
 	// try and play a firing animation if specified
@@ -187,6 +170,11 @@ void AArenaCharacter::MulticastOnFireFX_Implementation()
 		}
 	}
 
+	if (CharacterWeapon->FXFire != nullptr)
+	{
+		FTransform Transform = CharacterWeapon->MuzzleLocation->GetComponentTransform();
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), CharacterWeapon->FXFire, Transform);
+	}
 
 }
 
@@ -214,8 +202,8 @@ void AArenaCharacter::MulticastKillCharacter_Implementation()
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	TP_Mesh->SetSimulatePhysics(true);
 	TP_Mesh->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	CharacterWeapon->Destroy();
 	Mesh1P->DestroyComponent();
-	FP_Gun->DestroyComponent();
 	GetWorldTimerManager().SetTimer(DestroyActorHandle, this, &AArenaCharacter::CallDestroy, 5.0f, false);
 
 	if (HasAuthority())
@@ -231,7 +219,6 @@ void AArenaCharacter::MulticastKillCharacter_Implementation()
 
 void AArenaCharacter::CallDestroy()
 {
-	CharacterWeapon->Destroy();
 	Destroy();
 }
 

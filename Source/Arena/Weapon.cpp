@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "ArenaCharacter.h"
 #include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
 
 
 // Sets default values
@@ -18,7 +19,6 @@ AWeapon::AWeapon()
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CharacterWeapon"));
 	MuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzleLocation"));
 	MuzzleLocation->SetupAttachment(WeaponMesh);
-
 
 }
 
@@ -54,13 +54,7 @@ void AWeapon::Fire(FRotator InSpawnRotation)
 
 			// spawn the projectile at the muzzle
 			World->SpawnActor<AArenaProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+			CurrentMagazineAmmo -= 1;
 		}
 	}
-
-	//CharacterInventory->AvailableAmmo -= 1;
-
-	//MulticastOnFireFX();
-
 }
-
-

@@ -41,14 +41,20 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 		USceneComponent* MuzzleLocation;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= FX)
+		USoundBase* FireSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FX)
+		UParticleSystem* FXFire;
+
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
 		TSubclassOf<AArenaProjectile> ProjectileClass;
 
-	UPROPERTY(EditDefaultsOnly, Category = Effects)
-		USoundBase* FireSound;
-
-	UPROPERTY(EditDefaultsOnly, Category = Effects)
-		UParticleSystem* FireFX;
-
 	void Fire(FRotator InSpawnRotation);
+
+	UPROPERTY(BlueprintReadOnly)
+		int MaxMagazineAmmo = 5;
+	UPROPERTY(BlueprintReadOnly)
+		int CurrentMagazineAmmo = 5;
+
 };

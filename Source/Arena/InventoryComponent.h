@@ -25,5 +25,5 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UPROPERTY(Replicated)
-		int AvailableAmmo = 5;
+		int InventoryRifleAmmo = 5;
 };

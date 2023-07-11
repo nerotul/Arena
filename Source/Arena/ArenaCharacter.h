@@ -131,6 +131,7 @@ public:
 
 	void InitWeapon();
 
-
+	UFUNCTION(Server, Reliable)
+		void ServerReloadWeapon();
 };
 

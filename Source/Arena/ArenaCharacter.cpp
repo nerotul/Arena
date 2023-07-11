@@ -13,6 +13,9 @@
 #include "ArenaGameMode.h"
 #include "Weapon.h"
 #include "Particles/ParticleSystem.h"
+#include "Components/ArrowComponent.h"
+#include "DropObject.h"
+
 
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
@@ -89,6 +92,7 @@ void AArenaCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInp
 
 	// Bind fire event
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AArenaCharacter::ServerOnFire);
+	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &AArenaCharacter::ServerReloadWeapon);
 
 	// Bind movement events
 	PlayerInputComponent->BindAxis("MoveForward", this, &AArenaCharacter::MoveForward);
@@ -113,6 +117,7 @@ void AArenaCharacter::InitWeapon()
 	{
 		FActorSpawnParameters ActorSpawnParams;
 		ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+		ActorSpawnParams.Owner = this;
 
 		FAttachmentTransformRules Rule(EAttachmentRule::SnapToTarget, false);
 
@@ -125,6 +130,13 @@ void AArenaCharacter::InitWeapon()
 
 		}
 	}
+}
+
+void AArenaCharacter::ServerReloadWeapon_Implementation()
+{
+	CharacterWeapon->CurrentMagazineAmmo +=
+		CharacterInventory->InventoryRifleAmmo;
+	CharacterInventory->InventoryRifleAmmo -= CharacterInventory->InventoryRifleAmmo;
 }
 
 void AArenaCharacter::SetMeshVisibility()
@@ -176,6 +188,22 @@ void AArenaCharacter::MulticastOnFireFX_Implementation()
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), CharacterWeapon->FXFire, Transform);
 	}
 
+	if (CharacterWeapon->DropObjectClass != nullptr)
+	{
+		const FVector SpawnLocation = CharacterWeapon->ShellDrop->GetComponentLocation();
+		const FRotator SpawnRotation = CharacterWeapon->ShellDrop->GetComponentRotation();
+		FActorSpawnParameters ActorSpawnParams;
+		ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		ADropObject* Shell = GetWorld()->SpawnActor<ADropObject>(CharacterWeapon->DropObjectClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+		if (Shell)
+		{
+			Shell->SetLifeSpan(2.f);
+		}
+	}
+
+	// Current ammo didn't change in client's widget, although replicating, so multicasting it here
+	CharacterWeapon->CurrentMagazineAmmo -= 1;
 }
 
 float AArenaCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

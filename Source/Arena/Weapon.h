@@ -13,6 +13,8 @@ class UParticleSystem;
 class AArenaCharacter;
 class AArenaProjectile;
 class AActor;
+class UArrowComponent;
+class ADropObject;
 
 
 UCLASS()
@@ -50,11 +52,17 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
 		TSubclassOf<AArenaProjectile> ProjectileClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = Mesh)
+		TSubclassOf<ADropObject> DropObjectClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = Mesh)
+		UArrowComponent* ShellDrop;
+
 	void Fire(FRotator InSpawnRotation);
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 		int MaxMagazineAmmo = 5;
 	UPROPERTY(BlueprintReadOnly)
-		int CurrentMagazineAmmo = 5;
+		int CurrentMagazineAmmo = 500;
 
 };

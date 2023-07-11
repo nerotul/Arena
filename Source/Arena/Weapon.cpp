@@ -8,6 +8,9 @@
 #include "ArenaCharacter.h"
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/ArrowComponent.h"
+#include "DropObject.h"
+
 
 
 // Sets default values
@@ -17,8 +20,11 @@ AWeapon::AWeapon()
 	PrimaryActorTick.bCanEverTick = true;
 
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CharacterWeapon"));
+	RootComponent = WeaponMesh;
 	MuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzleLocation"));
 	MuzzleLocation->SetupAttachment(WeaponMesh);
+	ShellDrop = CreateDefaultSubobject<UArrowComponent>(TEXT("ShellDropArrow"));
+	ShellDrop->SetupAttachment(WeaponMesh);
 
 }
 
@@ -39,7 +45,7 @@ void AWeapon::Tick(float DeltaTime)
 void AWeapon::Fire(FRotator InSpawnRotation)
 {
 	// try and fire a projectile
-	if (ProjectileClass != nullptr)
+	if (ProjectileClass != nullptr && HasAuthority())
 	{
 		UWorld* const World = GetWorld();
 		if (World != nullptr)
@@ -54,7 +60,6 @@ void AWeapon::Fire(FRotator InSpawnRotation)
 
 			// spawn the projectile at the muzzle
 			World->SpawnActor<AArenaProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
-			CurrentMagazineAmmo -= 1;
 		}
 	}
 }

@@ -30,7 +30,7 @@ class AArenaCharacter : public ACharacter
 	UCameraComponent* FirstPersonCameraComponent;
 
 	//Gun mesh for third person
-	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+	//UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 	USkeletalMeshComponent* TP_Gun;
 
 	
@@ -66,9 +66,6 @@ public:
 	uint8 bUsingMotionControllers : 1;
 
 protected:
-	
-	void SetMeshVisibility();
-
 	/** Fires a projectile. */
 	UFUNCTION(Server, Reliable)
 		void ServerOnFire();
@@ -126,10 +123,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Weapon)
 		TSubclassOf<class AWeapon> WeaponClass;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(Replicated, BlueprintReadOnly)
 		AWeapon* CharacterWeapon;
 
-	void InitWeapon();
+	UFUNCTION(Server, Reliable)
+		void ServerInitWeapon();
 
 	UFUNCTION(Server, Reliable)
 		void ServerReloadWeapon();

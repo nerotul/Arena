@@ -15,6 +15,8 @@
 #include "Particles/ParticleSystem.h"
 #include "Components/ArrowComponent.h"
 #include "DropObject.h"
+#include "Net/UnrealNetwork.h"
+
 
 
 
@@ -74,8 +76,12 @@ void AArenaCharacter::BeginPlay()
 	TP_Gun->AttachToComponent(ACharacter::GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("WeaponSocket"));
 
 	// Show or hide the gun and hands based on whether or not pawn is locally controlled.
-	InitWeapon();
-	SetMeshVisibility();
+	
+	if(HasAuthority())
+	{
+		ServerInitWeapon();
+	}
+
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -107,11 +113,9 @@ void AArenaCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInp
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AArenaCharacter::LookUpAtRate);
 	
 	
-	// Calling it here because BeginPlay is too fast when respawning Listen-Server
-	SetMeshVisibility();
 }
 
-void AArenaCharacter::InitWeapon()
+void AArenaCharacter::ServerInitWeapon_Implementation()
 {
 	if (WeaponClass)
 	{
@@ -129,6 +133,7 @@ void AArenaCharacter::InitWeapon()
 			TP_Gun->SetSkeletalMesh(CharacterWeapon->FPWeaponMesh);
 
 		}
+
 	}
 }
 
@@ -137,20 +142,6 @@ void AArenaCharacter::ServerReloadWeapon_Implementation()
 	CharacterWeapon->CurrentMagazineAmmo +=
 		CharacterInventory->InventoryRifleAmmo;
 	CharacterInventory->InventoryRifleAmmo -= CharacterInventory->InventoryRifleAmmo;
-}
-
-void AArenaCharacter::SetMeshVisibility()
-{
-	if (IsLocallyControlled())
-	{
-		Mesh1P->SetHiddenInGame(false, true);
-		TP_Gun->SetHiddenInGame(true, true);
-	}
-	else
-	{
-		Mesh1P->SetHiddenInGame(true, true);
-		TP_Gun->SetHiddenInGame(false, true);
-	}
 }
 
 void AArenaCharacter::ServerOnFire_Implementation()
@@ -203,7 +194,6 @@ void AArenaCharacter::MulticastOnFireFX_Implementation()
 	}
 
 	// Current ammo didn't change in client's widget, although replicating, so multicasting it here
-	CharacterWeapon->CurrentMagazineAmmo -= 1;
 }
 
 float AArenaCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -278,4 +268,13 @@ void AArenaCharacter::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+}
+
+
+void AArenaCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AArenaCharacter, CharacterWeapon);
+
 }

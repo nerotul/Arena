@@ -62,7 +62,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 		int MaxMagazineAmmo = 5;
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(Replicated, BlueprintReadOnly)
 		int CurrentMagazineAmmo = 500;
 
 };

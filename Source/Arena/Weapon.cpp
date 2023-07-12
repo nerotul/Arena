@@ -10,16 +10,20 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/ArrowComponent.h"
 #include "DropObject.h"
+#include "Net/UnrealNetwork.h"
 
 
 
 // Sets default values
 AWeapon::AWeapon()
 {
+	bReplicates = true;
+
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CharacterWeapon"));
+	WeaponMesh->SetOnlyOwnerSee(true);
 	RootComponent = WeaponMesh;
 	MuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzleLocation"));
 	MuzzleLocation->SetupAttachment(WeaponMesh);
@@ -61,5 +65,16 @@ void AWeapon::Fire(FRotator InSpawnRotation)
 			// spawn the projectile at the muzzle
 			World->SpawnActor<AArenaProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
 		}
+
+		CurrentMagazineAmmo -= 1;
+
 	}
+}
+
+void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AWeapon, CurrentMagazineAmmo);
+
 }

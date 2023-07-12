@@ -12,8 +12,6 @@ class USoundBase;
 class UParticleSystem;
 class AArenaCharacter;
 class AArenaProjectile;
-class AActor;
-class UArrowComponent;
 class ADropObject;
 
 
@@ -53,16 +51,23 @@ public:
 		TSubclassOf<AArenaProjectile> ProjectileClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
-		TSubclassOf<ADropObject> DropObjectClass;
+		TSubclassOf<ADropObject> ShellClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
-		UArrowComponent* ShellDrop;
+		UArrowComponent* ShellEjectDirection;
+
+	UPROPERTY(Replicated)
+		AArenaCharacter* OwningCharacter;
 
 	void Fire(FRotator InSpawnRotation);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-		int MaxMagazineAmmo = 5;
+		int MaxMagazineAmmo = 10;
 	UPROPERTY(Replicated, BlueprintReadOnly)
-		int CurrentMagazineAmmo = 500;
+		int CurrentMagazineAmmo = 10;
+
+	UFUNCTION(NetMulticast, Unreliable)
+		void MulticastOnFireFX();
+
 
 };

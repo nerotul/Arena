@@ -8,11 +8,9 @@
 
 class UInputComponent;
 class USkeletalMeshComponent;
-class USceneComponent;
 class UCameraComponent;
 class UMotionControllerComponent;
 class UAnimMontage;
-class USoundBase;
 class UHealthComponent;
 class UInventoryComponent;
 
@@ -20,10 +18,6 @@ UCLASS(config=Game)
 class AArenaCharacter : public ACharacter
 {
 	GENERATED_BODY()
-
-	/** Pawn mesh: 1st person view (arms; seen only by self) */
-	UPROPERTY(VisibleDefaultsOnly, Category=Mesh)
-	USkeletalMeshComponent* Mesh1P;
 
 	/** First person camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -37,6 +31,10 @@ class AArenaCharacter : public ACharacter
 public:
 	AArenaCharacter();
 
+	/** Pawn mesh: 1st person view (arms; seen only by self) */
+	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+		USkeletalMeshComponent* Mesh1P;
+
 protected:
 	virtual void BeginPlay();
 
@@ -48,14 +46,6 @@ public:
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
-
-	/** Gun muzzle's offset from the characters location */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
-	FVector GunOffset;
-
-	/** Projectile class to spawn */
-	UPROPERTY(EditDefaultsOnly, Category=Projectile)
-	TSubclassOf<class AArenaProjectile> ProjectileClass;
 
 	/** AnimMontage to play each time we fire */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
@@ -69,8 +59,6 @@ protected:
 	/** Fires a projectile. */
 	UFUNCTION(Server, Reliable)
 		void ServerOnFire();
-	UFUNCTION(NetMulticast, Unreliable)
-		void MulticastOnFireFX();
 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 

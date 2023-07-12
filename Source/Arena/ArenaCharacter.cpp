@@ -12,13 +12,7 @@
 #include "InventoryComponent.h"
 #include "ArenaGameMode.h"
 #include "Weapon.h"
-#include "Particles/ParticleSystem.h"
-#include "Components/ArrowComponent.h"
-#include "DropObject.h"
 #include "Net/UnrealNetwork.h"
-
-
-
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -54,12 +48,6 @@ AArenaCharacter::AArenaCharacter()
 	TP_Gun->SetOnlyOwnerSee(false);
 	TP_Gun->bCastDynamicShadow = false;
 	TP_Gun->CastShadow = false;
-
-	// Default offset from the character location for projectiles to spawn
-	GunOffset = FVector(100.0f, 0.0f, 10.0f);
-
-	// Note: The ProjectileClass and the skeletal mesh/anim blueprints for Mesh1P, FP_Gun, and VR_Gun 
-	// are set in the derived blueprint asset named MyCharacter to avoid direct content references in C++.
 
 	CharacterHealth = CreateDefaultSubobject<UHealthComponent>(TEXT("CharacterHealth"));
 	CharacterHealth->OnCharacterDead.AddDynamic(this, &AArenaCharacter::MulticastKillCharacter);
@@ -112,7 +100,6 @@ void AArenaCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInp
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AArenaCharacter::LookUpAtRate);
 	
-	
 }
 
 void AArenaCharacter::ServerInitWeapon_Implementation()
@@ -131,9 +118,9 @@ void AArenaCharacter::ServerInitWeapon_Implementation()
 		{
 			CharacterWeapon->AttachToComponent(Mesh1P, Rule, FName("GripPoint"));
 			TP_Gun->SetSkeletalMesh(CharacterWeapon->FPWeaponMesh);
+			CharacterWeapon->OwningCharacter = this;
 
 		}
-
 	}
 }
 
@@ -146,54 +133,11 @@ void AArenaCharacter::ServerReloadWeapon_Implementation()
 
 void AArenaCharacter::ServerOnFire_Implementation()
 {
-	if (bIsAlive && CharacterWeapon && CharacterWeapon->CurrentMagazineAmmo > 0)
+	if (bIsAlive && CharacterWeapon)
 	{
 		CharacterWeapon->Fire(GetControlRotation());
-		MulticastOnFireFX();
 
 	}
-}
-
-void AArenaCharacter::MulticastOnFireFX_Implementation()
-{
-	// try and play the sound if specified
-	if (CharacterWeapon->FireSound != nullptr)
-	{
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), CharacterWeapon->FireSound, GetActorLocation());
-	}
-
-	// try and play a firing animation if specified
-	if (FireAnimation != nullptr)
-	{
-		// Get the animation object for the arms mesh
-		UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
-		if (AnimInstance != nullptr)
-		{
-			AnimInstance->Montage_Play(FireAnimation, 1.f);
-		}
-	}
-
-	if (CharacterWeapon->FXFire != nullptr)
-	{
-		FTransform Transform = CharacterWeapon->MuzzleLocation->GetComponentTransform();
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), CharacterWeapon->FXFire, Transform);
-	}
-
-	if (CharacterWeapon->DropObjectClass != nullptr)
-	{
-		const FVector SpawnLocation = CharacterWeapon->ShellDrop->GetComponentLocation();
-		const FRotator SpawnRotation = CharacterWeapon->ShellDrop->GetComponentRotation();
-		FActorSpawnParameters ActorSpawnParams;
-		ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-		ADropObject* Shell = GetWorld()->SpawnActor<ADropObject>(CharacterWeapon->DropObjectClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
-		if (Shell)
-		{
-			Shell->SetLifeSpan(2.f);
-		}
-	}
-
-	// Current ammo didn't change in client's widget, although replicating, so multicasting it here
 }
 
 float AArenaCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

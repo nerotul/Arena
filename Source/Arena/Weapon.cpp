@@ -55,7 +55,7 @@ void AWeapon::Tick(float DeltaTime)
 void AWeapon::Fire(FRotator InSpawnRotation)
 {
 	// try and fire a projectile
-	if (ProjectileClass != nullptr && HasAuthority() && CurrentMagazineAmmo > 0 && bCanFire)
+	if (ProjectileClass != nullptr && CurrentMagazineAmmo > 0 && bCanFire)
 	{
 		UWorld* const World = GetWorld();
 		if (World != nullptr)
@@ -173,14 +173,28 @@ void AWeapon::MulticastReloadFX_Implementation()
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ReloadSound, GetActorLocation());
 	}
 	
-	UAnimInstance* AnimInstance = OwningCharacter->GetMesh()->GetAnimInstance();
-
-	if (AnimInstance != nullptr)
+	if (OwningCharacter->TP_ReloadAnimation)
 	{
-		AnimInstance->Montage_Play(OwningCharacter->TP_ReloadAnimation, 1.f);
-		float AnimLength = OwningCharacter->TP_ReloadAnimation->GetPlayLength();
-		GetWorldTimerManager().SetTimer(ReloadTimerHandle, this, &AWeapon::ServerToggleReloadRestrictions, AnimLength, false);
+		UAnimInstance* AnimInstance = OwningCharacter->GetMesh()->GetAnimInstance();
 
+		if (AnimInstance != nullptr)
+		{
+			AnimInstance->Montage_Play(OwningCharacter->TP_ReloadAnimation, 1.f);
+			float AnimLength = OwningCharacter->TP_ReloadAnimation->GetPlayLength();
+			GetWorldTimerManager().SetTimer(ReloadTimerHandle, this, &AWeapon::ServerToggleReloadRestrictions, AnimLength, false);
+
+		}
+	}
+
+	if (OwningCharacter->FP_ReloadAnimation)
+	{
+		UAnimInstance* AnimInstance = OwningCharacter->Mesh1P->GetAnimInstance();
+
+		if (AnimInstance != nullptr)
+		{
+			AnimInstance->Montage_Play(OwningCharacter->FP_ReloadAnimation, 1.f);
+
+		}
 	}
 
 	if (MagazineClass != nullptr)
@@ -196,7 +210,6 @@ void AWeapon::MulticastReloadFX_Implementation()
 			Magazine->SetLifeSpan(2.f);
 		}
 	}
-
 }
 
 void AWeapon::ServerToggleReloadRestrictions_Implementation()

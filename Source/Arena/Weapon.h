@@ -76,9 +76,9 @@ public:
 		void MulticastOnFireFX();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-		int MaxMagazineAmmo = 10;
+		int MaxMagazineAmmo = 30;
 	UPROPERTY(Replicated, BlueprintReadOnly)
-		int CurrentMagazineAmmo = 10;
+		int CurrentMagazineAmmo = 30;
 
 	void ReloadWeapon();
 

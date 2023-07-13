@@ -35,8 +35,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
 		USkeletalMeshComponent* WeaponMesh;
 
-	UPROPERTY(EditDefaultsOnly, Category = Mesh)
-		USkeletalMesh* FPWeaponMesh;
+	//UPROPERTY(EditDefaultsOnly, Category = Mesh)
+	//	USkeletalMesh* FPWeaponMesh;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 		USceneComponent* MuzzleLocation;
@@ -59,15 +59,40 @@ public:
 	UPROPERTY(Replicated)
 		AArenaCharacter* OwningCharacter;
 
+	UPROPERTY(EditDefaultsOnly, Category = Mesh)
+		TSubclassOf<ADropObject> MagazineClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = Mesh)
+		UArrowComponent* MagazineEjectDirection;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FX)
+		USoundBase* ReloadSound;
+
+
+
 	void Fire(FRotator InSpawnRotation);
+
+	UFUNCTION(NetMulticast, Unreliable)
+		void MulticastOnFireFX();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 		int MaxMagazineAmmo = 10;
 	UPROPERTY(Replicated, BlueprintReadOnly)
 		int CurrentMagazineAmmo = 10;
 
-	UFUNCTION(NetMulticast, Unreliable)
-		void MulticastOnFireFX();
+	void ReloadWeapon();
 
+	UFUNCTION(NetMulticast, Unreliable)
+		void MulticastReloadFX();
+
+	UPROPERTY(Replicated)
+	bool bCanReload = true;
+	UPROPERTY(Replicated)
+	bool bCanFire = true;
+
+	FTimerHandle ReloadTimerHandle;
+
+	UFUNCTION(Server, Reliable)
+	void ServerToggleReloadRestrictions();
 
 };

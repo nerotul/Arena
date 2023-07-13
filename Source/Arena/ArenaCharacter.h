@@ -24,7 +24,7 @@ class AArenaCharacter : public ACharacter
 	UCameraComponent* FirstPersonCameraComponent;
 
 	//Gun mesh for third person
-	//UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 	USkeletalMeshComponent* TP_Gun;
 
 	
@@ -48,8 +48,11 @@ public:
 	float BaseLookUpRate;
 
 	/** AnimMontage to play each time we fire */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
 	UAnimMontage* FireAnimation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+		UAnimMontage* TP_FireAnimation;
 
 	/** Whether to use motion controller location for aiming. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
@@ -113,6 +116,13 @@ public:
 
 	UPROPERTY(Replicated, BlueprintReadOnly)
 		AWeapon* CharacterWeapon;
+
+	UPROPERTY(EditDefaultsOnly, Category = Animation)
+		UAnimMontage* FP_ReloadAnimation;
+
+	UPROPERTY(EditDefaultsOnly, Category = Animation)
+		UAnimMontage* TP_ReloadAnimation;
+
 
 	UFUNCTION(Server, Reliable)
 		void ServerInitWeapon();

@@ -117,18 +117,11 @@ void AArenaCharacter::ServerInitWeapon_Implementation()
 		if(CharacterWeapon)
 		{
 			CharacterWeapon->AttachToComponent(Mesh1P, Rule, FName("GripPoint"));
-			TP_Gun->SetSkeletalMesh(CharacterWeapon->FPWeaponMesh);
+			//TP_Gun->SetSkeletalMesh(CharacterWeapon->FPWeaponMesh);
 			CharacterWeapon->OwningCharacter = this;
 
 		}
 	}
-}
-
-void AArenaCharacter::ServerReloadWeapon_Implementation()
-{
-	CharacterWeapon->CurrentMagazineAmmo +=
-		CharacterInventory->InventoryRifleAmmo;
-	CharacterInventory->InventoryRifleAmmo -= CharacterInventory->InventoryRifleAmmo;
 }
 
 void AArenaCharacter::ServerOnFire_Implementation()
@@ -139,6 +132,16 @@ void AArenaCharacter::ServerOnFire_Implementation()
 
 	}
 }
+
+void AArenaCharacter::ServerReloadWeapon_Implementation()
+{
+	if (bIsAlive && CharacterWeapon)
+	{
+		CharacterWeapon->ReloadWeapon();
+
+	}
+}
+
 
 float AArenaCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {

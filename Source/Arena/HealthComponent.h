@@ -24,11 +24,11 @@ protected:
 
 	float MaxArmor = 100.0f;
 	UPROPERTY(Replicated)
-	float CurrentArmor = 100.0f;
+	float CurrentArmor = MaxArmor;
 
 	float MaxHealth = 100.0f;
 	UPROPERTY(Replicated)
-	float CurrentHealth = 100.0f;
+	float CurrentHealth = MaxHealth;
 
 public:	
 	// Called every frame

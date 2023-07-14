@@ -12,6 +12,8 @@
 #include "Net/UnrealNetwork.h"
 #include "InventoryComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "Camera/CameraComponent.h"
+
 
 
 // Sets default values
@@ -54,26 +56,51 @@ void AWeapon::Tick(float DeltaTime)
 //Called in Character on server
 void AWeapon::Fire(FRotator InSpawnRotation)
 {
-	// try and fire a projectile
-	if (ProjectileClass != nullptr && CurrentMagazineAmmo > 0 && bCanFire)
+	if (bIsPhysicalProjectile)
 	{
-		UWorld* const World = GetWorld();
-		if (World != nullptr)
+		// try and fire a projectile
+		if (ProjectileClass != nullptr && CurrentMagazineAmmo > 0 && bCanFire)
 		{
-			const FRotator SpawnRotation = InSpawnRotation;
-			// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
-			const FVector SpawnLocation = MuzzleLocation->GetComponentLocation();
+			UWorld* const World = GetWorld();
+			if (World != nullptr)
+			{
+				const FRotator SpawnRotation = InSpawnRotation;
+				// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
+				const FVector SpawnLocation = MuzzleLocation->GetComponentLocation();
 
-			//Set Spawn Collision Handling Override
-			FActorSpawnParameters ActorSpawnParams;
-			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+				//Set Spawn Collision Handling Override
+				FActorSpawnParameters ActorSpawnParams;
+				ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
-			// Spawn the projectile at the muzzle
-			World->SpawnActor<AArenaProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+				// Spawn the projectile at the muzzle
+				World->SpawnActor<AArenaProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+			}
+
+			CurrentMagazineAmmo -= 1;
+			MulticastOnFireFX();
 		}
+	}
+	else
+	{
+		if (CurrentMagazineAmmo > 0 && bCanFire)
+		{
+			FVector StartLocation = OwningCharacter->FirstPersonCameraComponent->GetComponentLocation();
+			FVector EndLocation;
+			EndLocation = StartLocation + (OwningCharacter->FirstPersonCameraComponent->GetForwardVector() * 10000.0f);
 
-		CurrentMagazineAmmo -= 1;
-		MulticastOnFireFX();
+			TArray<AActor*> ActorsToIgnore;
+			ActorsToIgnore.Add(OwningCharacter);
+			FHitResult Hit;
+				
+			UKismetSystemLibrary::LineTraceSingle(GetWorld(), StartLocation, EndLocation,
+				ETraceTypeQuery::TraceTypeQuery4, false, ActorsToIgnore, EDrawDebugTrace::ForDuration,
+				Hit, true, FLinearColor::Red, FLinearColor::Green, 5.0f);
+
+			UGameplayStatics::ApplyDamage(Hit.GetActor(), 30, GetInstigatorController(), this, NULL);
+			CurrentMagazineAmmo -= 1;
+			MulticastOnFireFX();
+
+		}
 	}
 }
 

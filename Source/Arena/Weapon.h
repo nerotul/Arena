@@ -86,13 +86,16 @@ public:
 		void MulticastReloadFX();
 
 	UPROPERTY(Replicated)
-	bool bCanReload = true;
+		bool bCanReload = true;
 	UPROPERTY(Replicated)
-	bool bCanFire = true;
+		bool bCanFire = true;
 
 	FTimerHandle ReloadTimerHandle;
 
 	UFUNCTION(Server, Reliable)
 	void ServerToggleReloadRestrictions();
+
+	UPROPERTY(EditDefaultsOnly, Category = FireMechanics)
+		bool bIsPhysicalProjectile = true;
 
 };

@@ -19,9 +19,6 @@ class AArenaCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-	/** First person camera */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	UCameraComponent* FirstPersonCameraComponent;
 
 	//Gun mesh for third person
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
@@ -30,6 +27,10 @@ class AArenaCharacter : public ACharacter
 	
 public:
 	AArenaCharacter();
+
+	/** First person camera */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+		UCameraComponent* FirstPersonCameraComponent;
 
 	/** Pawn mesh: 1st person view (arms; seen only by self) */
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)

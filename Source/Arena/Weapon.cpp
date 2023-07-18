@@ -56,10 +56,10 @@ void AWeapon::Tick(float DeltaTime)
 //Called in Character on server
 void AWeapon::Fire(FRotator InSpawnRotation)
 {
-	if (bIsPhysicalProjectile)
+	if (bIsPhysicalProjectile && ProjectileClass != nullptr)
 	{
 		// try and fire a projectile
-		if (ProjectileClass != nullptr && CurrentMagazineAmmo > 0 && bCanFire)
+		if (CurrentMagazineAmmo > 0 && bCanFire)
 		{
 			UWorld* const World = GetWorld();
 			if (World != nullptr)
@@ -73,7 +73,8 @@ void AWeapon::Fire(FRotator InSpawnRotation)
 				ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
 				// Spawn the projectile at the muzzle
-				World->SpawnActor<AArenaProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+				AArenaProjectile* Projectile = World->SpawnActor<AArenaProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+				Projectile->ProjectileDamage = WeaponDamage;
 			}
 
 			CurrentMagazineAmmo -= 1;
@@ -96,7 +97,8 @@ void AWeapon::Fire(FRotator InSpawnRotation)
 				ETraceTypeQuery::TraceTypeQuery4, false, ActorsToIgnore, EDrawDebugTrace::ForDuration,
 				Hit, true, FLinearColor::Red, FLinearColor::Green, 5.0f);
 
-			UGameplayStatics::ApplyDamage(Hit.GetActor(), 30, GetInstigatorController(), this, NULL);
+			UGameplayStatics::ApplyDamage(Hit.GetActor(), WeaponDamage, GetInstigatorController(), this, NULL);
+			
 			CurrentMagazineAmmo -= 1;
 			MulticastOnFireFX();
 
@@ -138,11 +140,11 @@ void AWeapon::MulticastOnFireFX_Implementation()
 		//FX with scene component
 		//FTransform Transform = MuzzleLocation->GetComponentTransform();
 		//UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FXFire, Transform);
-
+		
 		//FX with socket on weapon
 		const USkeletalMeshSocket* Socket = WeaponMesh->GetSocketByName("MuzzleFlash");
-		FTransform TransformTest = Socket->GetSocketTransform(WeaponMesh);
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FXFire, TransformTest);
+		FTransform Transform = Socket->GetSocketTransform(WeaponMesh);
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FXFire, Transform);
 
 	}
 
@@ -248,7 +250,7 @@ void AWeapon::ServerToggleReloadRestrictions_Implementation()
 
 void AWeapon::OnRep_WeaponChanged()
 {
-		OwningCharacter->TP_Gun->SetSkeletalMesh(FPWeaponMesh);
+	OwningCharacter->TP_Gun->SetSkeletalMesh(TPWeaponMesh);
 }
 
 void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

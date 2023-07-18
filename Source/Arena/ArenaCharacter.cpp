@@ -67,6 +67,8 @@ void AArenaCharacter::BeginPlay()
 	
 	if(HasAuthority())
 	{
+		WeaponClass = CharacterInventory->InventoryWeapons[InitialWeaponIndex];
+		CurrentWeaponIndex = InitialWeaponIndex;
 		ServerInitWeapon();
 	}
 
@@ -107,10 +109,11 @@ void AArenaCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInp
 
 void AArenaCharacter::ServerSwitchPreviousWeapon_Implementation()
 {
-	if (CharacterInventory)
+	if (CharacterInventory && CurrentWeaponIndex != 0)
 	{
 		CharacterWeapon->Destroy();
 		WeaponClass = CharacterInventory->InventoryWeapons[0];
+		CurrentWeaponIndex = 0;
 		ServerInitWeapon();
 
 	}
@@ -119,10 +122,11 @@ void AArenaCharacter::ServerSwitchPreviousWeapon_Implementation()
 
 void AArenaCharacter::ServerSwitchNextWeapon_Implementation()
 {
-	if (CharacterInventory)
+	if (CharacterInventory && CurrentWeaponIndex != 1)
 	{
 		CharacterWeapon->Destroy();
 		WeaponClass = CharacterInventory->InventoryWeapons[1];
+		CurrentWeaponIndex = 1;
 		ServerInitWeapon();
 
 	}
@@ -144,7 +148,7 @@ void AArenaCharacter::ServerInitWeapon_Implementation()
 		{
 			CharacterWeapon->AttachToComponent(Mesh1P, Rule, FName("GripPoint"));
 			CharacterWeapon->OwningCharacter = this;
-			TP_Gun->SetSkeletalMesh(CharacterWeapon->FPWeaponMesh);
+			TP_Gun->SetSkeletalMesh(CharacterWeapon->TPWeaponMesh);
 
 		}
 	}

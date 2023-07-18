@@ -36,7 +36,7 @@ public:
 		USkeletalMeshComponent* WeaponMesh;
 
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
-		USkeletalMesh* FPWeaponMesh;
+		USkeletalMesh* TPWeaponMesh;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 		USceneComponent* MuzzleLocation;
@@ -77,8 +77,8 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 		int MaxMagazineAmmo = 30;
-	UPROPERTY(Replicated, BlueprintReadOnly)
-		int CurrentMagazineAmmo = 30;
+	UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadOnly)
+		int CurrentMagazineAmmo = MaxMagazineAmmo;
 
 	void ReloadWeapon();
 
@@ -100,5 +100,8 @@ public:
 
 	UFUNCTION()
 		void OnRep_WeaponChanged();
+
+	UPROPERTY(EditDefaultsOnly)
+		float WeaponDamage = 20;
 
 };

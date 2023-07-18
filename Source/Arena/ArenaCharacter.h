@@ -124,6 +124,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Animation)
 		UAnimMontage* TP_ReloadAnimation;
 
+	UPROPERTY(EditDefaultsOnly)
+		int InitialWeaponIndex = 0;
+
+	UPROPERTY()
+		int CurrentWeaponIndex;
+
 
 	UFUNCTION(Server, Reliable)
 		void ServerInitWeapon();

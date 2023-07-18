@@ -246,6 +246,11 @@ void AWeapon::ServerToggleReloadRestrictions_Implementation()
 
 }
 
+void AWeapon::OnRep_WeaponChanged()
+{
+		OwningCharacter->TP_Gun->SetSkeletalMesh(FPWeaponMesh);
+}
+
 void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

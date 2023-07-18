@@ -99,7 +99,33 @@ void AArenaCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInp
 	PlayerInputComponent->BindAxis("TurnRate", this, &AArenaCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AArenaCharacter::LookUpAtRate);
+
+	PlayerInputComponent->BindAction("NextWeapon", IE_Pressed, this, &AArenaCharacter::ServerSwitchNextWeapon);
+	PlayerInputComponent->BindAction("PreviousWeapon", IE_Pressed, this, &AArenaCharacter::ServerSwitchPreviousWeapon);
 	
+}
+
+void AArenaCharacter::ServerSwitchPreviousWeapon_Implementation()
+{
+	if (CharacterInventory)
+	{
+		CharacterWeapon->Destroy();
+		WeaponClass = CharacterInventory->InventoryWeapons[0];
+		ServerInitWeapon();
+
+	}
+
+}
+
+void AArenaCharacter::ServerSwitchNextWeapon_Implementation()
+{
+	if (CharacterInventory)
+	{
+		CharacterWeapon->Destroy();
+		WeaponClass = CharacterInventory->InventoryWeapons[1];
+		ServerInitWeapon();
+
+	}
 }
 
 void AArenaCharacter::ServerInitWeapon_Implementation()
@@ -117,8 +143,8 @@ void AArenaCharacter::ServerInitWeapon_Implementation()
 		if(CharacterWeapon)
 		{
 			CharacterWeapon->AttachToComponent(Mesh1P, Rule, FName("GripPoint"));
-			//TP_Gun->SetSkeletalMesh(CharacterWeapon->FPWeaponMesh);
 			CharacterWeapon->OwningCharacter = this;
+			TP_Gun->SetSkeletalMesh(CharacterWeapon->FPWeaponMesh);
 
 		}
 	}

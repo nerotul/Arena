@@ -26,4 +26,8 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Replicated)
 		int InventoryRifleAmmo = 30;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated)
+		TArray<TSubclassOf<class AWeapon>> InventoryWeapons;
+
 };

@@ -20,13 +20,13 @@ class AArenaCharacter : public ACharacter
 	GENERATED_BODY()
 
 
-	//Gun mesh for third person
-	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-	USkeletalMeshComponent* TP_Gun;
-
-	
 public:
 	AArenaCharacter();
+
+	//Gun mesh for third person
+	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+		USkeletalMeshComponent* TP_Gun;
+
 
 	/** First person camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -109,7 +109,7 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 		UHealthComponent* CharacterHealth;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UInventoryComponent* CharacterInventory;
 
 	UPROPERTY(EditDefaultsOnly, Category = Weapon)
@@ -130,5 +130,11 @@ public:
 
 	UFUNCTION(Server, Reliable)
 		void ServerReloadWeapon();
+
+	UFUNCTION(Server, Reliable)
+		void ServerSwitchNextWeapon();
+
+	UFUNCTION(Server, Reliable)
+		void ServerSwitchPreviousWeapon();
 };
 

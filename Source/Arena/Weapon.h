@@ -35,8 +35,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
 		USkeletalMeshComponent* WeaponMesh;
 
-	//UPROPERTY(EditDefaultsOnly, Category = Mesh)
-	//	USkeletalMesh* FPWeaponMesh;
+	UPROPERTY(EditDefaultsOnly, Category = Mesh)
+		USkeletalMesh* FPWeaponMesh;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 		USceneComponent* MuzzleLocation;
@@ -56,7 +56,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
 		UArrowComponent* ShellEjectDirection;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(ReplicatedUsing = OnRep_WeaponChanged)
 		AArenaCharacter* OwningCharacter;
 
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
@@ -97,5 +97,8 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = FireMechanics)
 		bool bIsPhysicalProjectile = true;
+
+	UFUNCTION()
+		void OnRep_WeaponChanged();
 
 };

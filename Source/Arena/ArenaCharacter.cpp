@@ -107,28 +107,50 @@ void AArenaCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInp
 	
 }
 
-void AArenaCharacter::ServerSwitchPreviousWeapon_Implementation()
-{
-	if (CharacterInventory && CurrentWeaponIndex != 0)
-	{
-		CharacterWeapon->Destroy();
-		WeaponClass = CharacterInventory->InventoryWeapons[0];
-		CurrentWeaponIndex = 0;
-		ServerInitWeapon();
-
-	}
-
-}
-
 void AArenaCharacter::ServerSwitchNextWeapon_Implementation()
 {
-	if (CharacterInventory && CurrentWeaponIndex != 1)
+	if (CharacterInventory)
 	{
-		CharacterWeapon->Destroy();
-		WeaponClass = CharacterInventory->InventoryWeapons[1];
-		CurrentWeaponIndex = 1;
-		ServerInitWeapon();
+		if (CharacterInventory->InventoryWeapons.IsValidIndex(CurrentWeaponIndex + 1))
+		{
+			CharacterWeapon->Destroy();
+			WeaponClass = CharacterInventory->InventoryWeapons[CurrentWeaponIndex + 1];
+			CurrentWeaponIndex += 1;
+			ServerInitWeapon();
 
+		}
+		else
+		{
+			CharacterWeapon->Destroy();
+			WeaponClass = CharacterInventory->InventoryWeapons[0];
+			CurrentWeaponIndex = 0;
+			ServerInitWeapon();
+
+		}
+	}
+}
+
+void AArenaCharacter::ServerSwitchPreviousWeapon_Implementation()
+{
+	if (CharacterInventory)
+	{
+		if (CharacterInventory->InventoryWeapons.IsValidIndex(CurrentWeaponIndex - 1))
+		{
+			CharacterWeapon->Destroy();
+			WeaponClass = CharacterInventory->InventoryWeapons[CurrentWeaponIndex - 1];
+			CurrentWeaponIndex -= 1;
+			ServerInitWeapon();
+
+		}
+		else
+		{
+			CharacterWeapon->Destroy();
+			int32 ArraySize = CharacterInventory->InventoryWeapons.Num();
+			WeaponClass = CharacterInventory->InventoryWeapons[ArraySize - 1];
+			CurrentWeaponIndex = (ArraySize - 1);
+			ServerInitWeapon();
+
+		}
 	}
 }
 

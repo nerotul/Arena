@@ -42,5 +42,8 @@ void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UInventoryComponent, InventoryRifleAmmo);
+	DOREPLIFETIME(UInventoryComponent, InventoryRifleMagazineAmmo);
+	DOREPLIFETIME(UInventoryComponent, InventorySniperAmmo);
+	DOREPLIFETIME(UInventoryComponent, InventorySniperMagazineAmmo);
 
 }

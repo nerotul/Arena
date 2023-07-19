@@ -15,6 +15,13 @@ class AArenaProjectile;
 class ADropObject;
 
 
+//UENUM(BlueprintType)
+//enum class WeaponType : uint8
+//{
+//	AR UMETA(DisplayName = "AR"),
+//	Sniper   UMETA(DisplayName = "Sniper"),
+//};
+
 UCLASS()
 class ARENA_API AWeapon : public AActor
 {
@@ -33,40 +40,43 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
-		USkeletalMeshComponent* WeaponMesh;
+		USkeletalMeshComponent* WeaponMesh = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
-		USkeletalMesh* TPWeaponMesh;
+		USkeletalMesh* TPWeaponMesh = nullptr;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-		USceneComponent* MuzzleLocation;
+		USceneComponent* MuzzleLocation = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= FX)
-		USoundBase* FireSound;
+		USoundBase* FireSound = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FX)
-		UParticleSystem* FXFire;
+		UParticleSystem* FXFire = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
-		TSubclassOf<AArenaProjectile> ProjectileClass;
+		TSubclassOf<AArenaProjectile> ProjectileClass = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
-		TSubclassOf<ADropObject> ShellClass;
+		TSubclassOf<ADropObject> ShellClass = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
-		UArrowComponent* ShellEjectDirection;
+		UArrowComponent* ShellEjectDirection = nullptr;
 
 	UPROPERTY(ReplicatedUsing = OnRep_WeaponChanged)
-		AArenaCharacter* OwningCharacter;
+		AArenaCharacter* OwningCharacter = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
-		TSubclassOf<ADropObject> MagazineClass;
+		TSubclassOf<ADropObject> MagazineClass = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
-		UArrowComponent* MagazineEjectDirection;
+		UArrowComponent* MagazineEjectDirection = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FX)
-		USoundBase* ReloadSound;
+		USoundBase* ReloadSound = nullptr;
+
+	//UPROPERTY(EditDefaultsOnly, Category = WeaponType)
+	//	WeaponType WeaponType = WeaponType::AR;
 
 
 
@@ -103,5 +113,4 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 		float WeaponDamage = 20;
-
 };

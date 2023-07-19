@@ -46,7 +46,6 @@ void AArenaProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, U
 				OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
 			}
 			UGameplayStatics::ApplyDamage(OtherActor, ProjectileDamage, GetInstigatorController(), this, NULL);
-			//UGameplayStatics::ApplyPointDamage(OtherActor, 50, Hit.TraceStart, Hit, GetInstigatorController(), this, NULL);
 
 		}
 		

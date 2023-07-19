@@ -113,6 +113,8 @@ void AArenaCharacter::MulticastSyncCameraPitch_Implementation(float InPitch)
 	CharacterCameraRotation = NewRotation;
 	FirstPersonCameraComponent->SetWorldRotation(NewRotation);
 
+
+
 }
 
 void AArenaCharacter::ServerSyncCameraPitch_Implementation(float InPitch)

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "ArenaInterface.h"
 #include "ArenaCharacter.generated.h"
 
 class UInputComponent;
@@ -15,7 +16,7 @@ class UHealthComponent;
 class UInventoryComponent;
 
 UCLASS(config=Game)
-class AArenaCharacter : public ACharacter
+class AArenaCharacter : public ACharacter, public IArenaInterface
 {
 	GENERATED_BODY()
 
@@ -151,5 +152,6 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 		FRotator CharacterCameraRotation;
+
 };
 

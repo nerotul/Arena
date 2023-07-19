@@ -15,12 +15,12 @@ class AArenaProjectile;
 class ADropObject;
 
 
-//UENUM(BlueprintType)
-//enum class WeaponType : uint8
-//{
-//	AR UMETA(DisplayName = "AR"),
-//	Sniper   UMETA(DisplayName = "Sniper"),
-//};
+UENUM(BlueprintType)
+enum class WeaponType : uint8
+{
+	AR UMETA(DisplayName = "AR"),
+	Sniper   UMETA(DisplayName = "Sniper"),
+};
 
 UCLASS()
 class ARENA_API AWeapon : public AActor
@@ -75,8 +75,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FX)
 		USoundBase* ReloadSound = nullptr;
 
-	//UPROPERTY(EditDefaultsOnly, Category = WeaponType)
-	//	WeaponType WeaponType = WeaponType::AR;
+	UPROPERTY(EditDefaultsOnly, Category = WeaponType)
+		WeaponType WeaponType = WeaponType::AR;
 
 
 

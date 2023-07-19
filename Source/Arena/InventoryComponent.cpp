@@ -3,7 +3,6 @@
 
 #include "InventoryComponent.h"
 #include "Net/UnrealNetwork.h"
-#include "Weapon.h"
 
 
 // Sets default values for this component's properties
@@ -35,6 +34,68 @@ void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+}
+
+void UInventoryComponent::SetInventoryAmmo(WeaponType InWeaponType, int InAmmoChange)
+{
+	switch (InWeaponType)
+	{
+	case WeaponType::AR:
+		InventoryRifleAmmo -= InAmmoChange;
+		break;
+	case WeaponType::Sniper:
+		InventorySniperAmmo -= InAmmoChange;
+		break;
+	default:
+		break;
+	}
+}
+
+int UInventoryComponent::GetInventoryAmmo(WeaponType InWeaponType)
+{
+	switch (InWeaponType)
+	{
+	case WeaponType::AR:
+		return InventoryRifleAmmo;
+		break;
+	case WeaponType::Sniper:
+		return InventorySniperAmmo;
+		break;
+	default:
+		return 0;
+		break;
+	}
+}
+
+void UInventoryComponent::SetInventoryMagazineAmmo(WeaponType InWeaponType, int InAmmo)
+{
+	switch (InWeaponType)
+	{
+	case WeaponType::AR:
+		InventoryRifleMagazineAmmo = InAmmo;
+		break;
+	case WeaponType::Sniper:
+		InventorySniperMagazineAmmo = InAmmo;
+		break;
+	default:
+		break;
+	}
+}
+
+int UInventoryComponent::GetInventoryMagazineAmmo(WeaponType InWeaponType)
+{
+	switch (InWeaponType)
+	{
+	case WeaponType::AR:
+		return InventoryRifleMagazineAmmo;
+		break;
+	case WeaponType::Sniper:
+		return InventorySniperMagazineAmmo;
+		break;
+	default:
+		return 0;
+		break;
+	}
 }
 
 void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

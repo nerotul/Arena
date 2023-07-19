@@ -36,6 +36,7 @@ AWeapon::AWeapon()
 
 	MagazineEjectDirection = CreateDefaultSubobject<UArrowComponent>(TEXT("MagazineEjectDirection"));
 	MagazineEjectDirection->SetupAttachment(WeaponMesh);
+
 	
 }
 
@@ -169,7 +170,8 @@ void AWeapon::ReloadWeapon()
 	if (bCanReload)
 	{
 		int MagazineEmptySpace = MaxMagazineAmmo - CurrentMagazineAmmo;
-		int& InventoryAmmo = OwningCharacter->CharacterInventory->InventoryRifleAmmo;
+		//int& InventoryAmmo = OwningCharacter->CharacterInventory->InventoryRifleAmmo;
+		int InventoryAmmo = OwningCharacter->CharacterInventory->GetInventoryAmmo(WeaponType);
 
 		if (MagazineEmptySpace > 0 && InventoryAmmo != 0)
 		{
@@ -179,14 +181,15 @@ void AWeapon::ReloadWeapon()
 			if (InventoryAmmo > MagazineEmptySpace)
 			{
 				CurrentMagazineAmmo += MagazineEmptySpace;
-				InventoryAmmo -= MagazineEmptySpace;
+				//InventoryAmmo -= MagazineEmptySpace;
+				OwningCharacter->CharacterInventory->SetInventoryAmmo(WeaponType, MagazineEmptySpace);
 				MulticastReloadFX();
 
 			}
 			else
 			{
 				CurrentMagazineAmmo += InventoryAmmo;
-				InventoryAmmo = 0;
+				OwningCharacter->CharacterInventory->SetInventoryAmmo(WeaponType, InventoryAmmo);
 				MulticastReloadFX();
 
 			}

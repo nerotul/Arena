@@ -4,8 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Weapon.h"
 #include "InventoryComponent.generated.h"
 
+//class WeaponType;
 
 UCLASS(BlueprintType, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ARENA_API UInventoryComponent : public UActorComponent
@@ -30,11 +32,23 @@ public:
 		int InventoryRifleMagazineAmmo = 30;
 
 	UPROPERTY(BlueprintReadOnly, Replicated)
-		int InventorySniperAmmo = 30;
+		int InventorySniperAmmo = 5;
 	UPROPERTY(BlueprintReadOnly, Replicated)
 		int InventorySniperMagazineAmmo = 5;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated)
 		TArray<TSubclassOf<class AWeapon>> InventoryWeapons;
+
+	UFUNCTION()
+		void SetInventoryAmmo(WeaponType InWeaponType, int InAmmoChange);
+
+	UFUNCTION()
+		int GetInventoryAmmo(WeaponType InWeaponType);
+
+	UFUNCTION()
+		void SetInventoryMagazineAmmo(WeaponType InWeaponType, int InAmmo);
+
+	UFUNCTION()
+		int GetInventoryMagazineAmmo(WeaponType InWeaponType);
 
 };

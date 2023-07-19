@@ -113,6 +113,7 @@ void AArenaCharacter::ServerSwitchNextWeapon_Implementation()
 	{
 		if (CharacterInventory->InventoryWeapons.IsValidIndex(CurrentWeaponIndex + 1))
 		{
+			CharacterInventory->SetInventoryMagazineAmmo(CharacterWeapon->WeaponType, CharacterWeapon->CurrentMagazineAmmo);
 			CharacterWeapon->Destroy();
 			WeaponClass = CharacterInventory->InventoryWeapons[CurrentWeaponIndex + 1];
 			CurrentWeaponIndex += 1;
@@ -121,6 +122,7 @@ void AArenaCharacter::ServerSwitchNextWeapon_Implementation()
 		}
 		else
 		{
+			CharacterInventory->SetInventoryMagazineAmmo(CharacterWeapon->WeaponType, CharacterWeapon->CurrentMagazineAmmo);
 			CharacterWeapon->Destroy();
 			WeaponClass = CharacterInventory->InventoryWeapons[0];
 			CurrentWeaponIndex = 0;
@@ -136,6 +138,7 @@ void AArenaCharacter::ServerSwitchPreviousWeapon_Implementation()
 	{
 		if (CharacterInventory->InventoryWeapons.IsValidIndex(CurrentWeaponIndex - 1))
 		{
+			CharacterInventory->SetInventoryMagazineAmmo(CharacterWeapon->WeaponType, CharacterWeapon->CurrentMagazineAmmo);
 			CharacterWeapon->Destroy();
 			WeaponClass = CharacterInventory->InventoryWeapons[CurrentWeaponIndex - 1];
 			CurrentWeaponIndex -= 1;
@@ -144,6 +147,7 @@ void AArenaCharacter::ServerSwitchPreviousWeapon_Implementation()
 		}
 		else
 		{
+			CharacterInventory->SetInventoryMagazineAmmo(CharacterWeapon->WeaponType, CharacterWeapon->CurrentMagazineAmmo);
 			CharacterWeapon->Destroy();
 			int32 ArraySize = CharacterInventory->InventoryWeapons.Num();
 			WeaponClass = CharacterInventory->InventoryWeapons[ArraySize - 1];
@@ -171,6 +175,8 @@ void AArenaCharacter::ServerInitWeapon_Implementation()
 			CharacterWeapon->AttachToComponent(Mesh1P, Rule, FName("GripPoint"));
 			CharacterWeapon->OwningCharacter = this;
 			TP_Gun->SetSkeletalMesh(CharacterWeapon->TPWeaponMesh);
+			CharacterWeapon->CurrentMagazineAmmo = CharacterInventory->GetInventoryMagazineAmmo(CharacterWeapon->WeaponType);
+
 
 		}
 	}

@@ -142,5 +142,14 @@ public:
 
 	UFUNCTION(Server, Reliable)
 		void ServerSwitchPreviousWeapon();
+
+	UFUNCTION(Server, Unreliable)
+		void ServerSyncCameraPitch(float InPitch);
+
+	UFUNCTION(NetMulticast, Unreliable)
+		void MulticastSyncCameraPitch(float InPitch);
+
+	UPROPERTY(BlueprintReadOnly)
+		FRotator CharacterCameraRotation;
 };
 

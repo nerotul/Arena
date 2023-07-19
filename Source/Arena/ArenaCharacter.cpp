@@ -71,7 +71,6 @@ void AArenaCharacter::BeginPlay()
 		CurrentWeaponIndex = InitialWeaponIndex;
 		ServerInitWeapon();
 	}
-
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -105,6 +104,20 @@ void AArenaCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInp
 	PlayerInputComponent->BindAction("NextWeapon", IE_Pressed, this, &AArenaCharacter::ServerSwitchNextWeapon);
 	PlayerInputComponent->BindAction("PreviousWeapon", IE_Pressed, this, &AArenaCharacter::ServerSwitchPreviousWeapon);
 	
+}
+
+void AArenaCharacter::MulticastSyncCameraPitch_Implementation(float InPitch)
+{
+	FRotator NewRotation = FirstPersonCameraComponent->GetComponentRotation();
+	NewRotation.Pitch = InPitch;
+	CharacterCameraRotation = NewRotation;
+	FirstPersonCameraComponent->SetWorldRotation(NewRotation);
+
+}
+
+void AArenaCharacter::ServerSyncCameraPitch_Implementation(float InPitch)
+{
+	MulticastSyncCameraPitch(InPitch);
 }
 
 void AArenaCharacter::ServerSwitchNextWeapon_Implementation()
@@ -273,6 +286,16 @@ void AArenaCharacter::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+
+	// Camera pitch synchronization between players
+	if (HasAuthority())
+	{
+		MulticastSyncCameraPitch(FirstPersonCameraComponent->GetComponentRotation().Pitch);
+	}
+	else
+	{
+		ServerSyncCameraPitch(FirstPersonCameraComponent->GetComponentRotation().Pitch);
+	}
 }
 
 

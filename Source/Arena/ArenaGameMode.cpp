@@ -5,6 +5,8 @@
 #include "ArenaCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/Engine.h"
+#include "ArenaPlayerState.h"
+
 
 AArenaGameMode::AArenaGameMode()
 	: Super()
@@ -15,6 +17,8 @@ AArenaGameMode::AArenaGameMode()
 
 	// use our custom HUD class
 	HUDClass = AArenaHUD::StaticClass();
+
+	PlayerStateClass = AArenaPlayerState::StaticClass();
 }
 
 void AArenaGameMode::RespawnCharacter(AController* CharacterController)

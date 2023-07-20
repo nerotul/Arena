@@ -4,6 +4,8 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "ArenaCharacter.h"
+
 
 AArenaProjectile::AArenaProjectile() 
 {
@@ -45,7 +47,7 @@ void AArenaProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, U
 			{
 				OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
 			}
-			UGameplayStatics::ApplyDamage(OtherActor, ProjectileDamage, GetInstigatorController(), this, NULL);
+			UGameplayStatics::ApplyDamage(OtherActor, ProjectileDamage, GetInstigatorController(), OwningCharacter, NULL);
 
 		}
 		

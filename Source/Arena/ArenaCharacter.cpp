@@ -13,6 +13,7 @@
 #include "ArenaGameMode.h"
 #include "Weapon.h"
 #include "Net/UnrealNetwork.h"
+#include "ArenaPlayerState.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -50,7 +51,7 @@ AArenaCharacter::AArenaCharacter()
 	TP_Gun->CastShadow = false;
 
 	CharacterHealth = CreateDefaultSubobject<UHealthComponent>(TEXT("CharacterHealth"));
-	CharacterHealth->OnCharacterDead.AddDynamic(this, &AArenaCharacter::MulticastKillCharacter);
+	CharacterHealth->OnCharacterDead.AddDynamic(this, &AArenaCharacter::ServerIncrementPlayerScore);
 
 	CharacterInventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("CharacterInventory"));
 }
@@ -122,7 +123,7 @@ void AArenaCharacter::ServerSyncCameraPitch_Implementation(float InPitch)
 
 void AArenaCharacter::ServerSwitchNextWeapon_Implementation()
 {
-	if (CharacterInventory)
+	if (CharacterInventory && CharacterWeapon->bCanReload)
 	{
 		if (CharacterInventory->InventoryWeapons.IsValidIndex(CurrentWeaponIndex + 1))
 		{
@@ -147,7 +148,7 @@ void AArenaCharacter::ServerSwitchNextWeapon_Implementation()
 
 void AArenaCharacter::ServerSwitchPreviousWeapon_Implementation()
 {
-	if (CharacterInventory)
+	if (CharacterInventory && CharacterWeapon->bCanReload)
 	{
 		if (CharacterInventory->InventoryWeapons.IsValidIndex(CurrentWeaponIndex - 1))
 		{
@@ -220,7 +221,7 @@ float AArenaCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 	{
 		float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 		CharacterHealth->ChangeHealthValue(-DamageAmount);
-
+		LastDamageCauser = DamageCauser;
 		return ActualDamage;
 	}
 	else
@@ -305,4 +306,17 @@ void AArenaCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 
 	DOREPLIFETIME(AArenaCharacter, CharacterWeapon);
 
+}
+
+void AArenaCharacter::ServerIncrementPlayerScore_Implementation()
+{
+	if (LastDamageCauser != nullptr)
+	{
+		AArenaCharacter* KillerPlayer = Cast<AArenaCharacter>(LastDamageCauser);
+		AArenaPlayerState* PS = Cast<AArenaPlayerState>(KillerPlayer->GetPlayerState());
+		PS->IncrementPlayerScore();
+
+	}
+
+	MulticastKillCharacter();
 }

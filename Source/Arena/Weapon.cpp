@@ -78,6 +78,7 @@ void AWeapon::Fire(FRotator InSpawnRotation)
 				// Spawn the projectile at the muzzle
 				AArenaProjectile* Projectile = World->SpawnActor<AArenaProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
 				Projectile->ProjectileDamage = WeaponDamage;
+				Projectile->OwningCharacter = OwningCharacter;
 			}
 
 			CurrentMagazineAmmo -= 1;
@@ -99,12 +100,12 @@ void AWeapon::Fire(FRotator InSpawnRotation)
 			TArray<AActor*> ActorsToIgnore;
 			ActorsToIgnore.Add(OwningCharacter);
 			FHitResult Hit;
-				
+			
 			UKismetSystemLibrary::LineTraceSingle(GetWorld(), StartLocation, EndLocation,
 				ETraceTypeQuery::TraceTypeQuery4, false, ActorsToIgnore, EDrawDebugTrace::ForDuration,
 				Hit, true, FLinearColor::Red, FLinearColor::Green, 5.0f);
 
-			UGameplayStatics::ApplyDamage(Hit.GetActor(), WeaponDamage, GetInstigatorController(), this, NULL);
+			UGameplayStatics::ApplyDamage(Hit.GetActor(), WeaponDamage, GetInstigatorController(), OwningCharacter, NULL);
 			
 			CurrentMagazineAmmo -= 1;
 			MulticastOnFireFX();

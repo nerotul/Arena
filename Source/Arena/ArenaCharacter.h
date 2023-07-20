@@ -153,5 +153,11 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 		FRotator CharacterCameraRotation;
 
+	UPROPERTY(BlueprintReadOnly)
+		AActor* LastDamageCauser;
+
+	UFUNCTION(Server, Reliable)
+		void ServerIncrementPlayerScore();
+
 };
 

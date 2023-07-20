@@ -8,6 +8,7 @@
 
 class USphereComponent;
 class UProjectileMovementComponent;
+class AArenaCharacter;
 
 UCLASS(config=Game)
 class AArenaProjectile : public AActor
@@ -36,5 +37,9 @@ public:
 
 	UPROPERTY()
 		float ProjectileDamage = 10;
+
+	UPROPERTY()
+		AArenaCharacter* OwningCharacter = nullptr;
+
 };
 

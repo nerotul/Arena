@@ -5,7 +5,3 @@
 
 // Add default functionality here for any IArenaInterface functions that are not pure virtual.
 
-//FRotator IArenaInterface::GetCameraRotation(FRotator InRotator)
-//{
-//	return InRotator;
-//}

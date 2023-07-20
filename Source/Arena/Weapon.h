@@ -113,4 +113,13 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 		float WeaponDamage = 20;
+
+	FTimerHandle FireDelay;
+
+	UFUNCTION()
+		void SetCanFire();
+
+	UPROPERTY(EditDefaultsOnly)
+		float RateOfFire = 1;
+
 };

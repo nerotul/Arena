@@ -62,6 +62,8 @@ void AWeapon::Fire(FRotator InSpawnRotation)
 		// try and fire a projectile
 		if (CurrentMagazineAmmo > 0 && bCanFire)
 		{
+			bCanFire = false;
+
 			UWorld* const World = GetWorld();
 			if (World != nullptr)
 			{
@@ -80,12 +82,16 @@ void AWeapon::Fire(FRotator InSpawnRotation)
 
 			CurrentMagazineAmmo -= 1;
 			MulticastOnFireFX();
+
+			GetWorldTimerManager().SetTimer(FireDelay, this, &AWeapon::SetCanFire, RateOfFire, false);
 		}
 	}
 	else
 	{
 		if (CurrentMagazineAmmo > 0 && bCanFire)
 		{
+			bCanFire = false;
+
 			FVector StartLocation = OwningCharacter->FirstPersonCameraComponent->GetComponentLocation();
 			FVector EndLocation;
 			EndLocation = StartLocation + (OwningCharacter->FirstPersonCameraComponent->GetForwardVector() * 10000.0f);
@@ -102,6 +108,9 @@ void AWeapon::Fire(FRotator InSpawnRotation)
 			
 			CurrentMagazineAmmo -= 1;
 			MulticastOnFireFX();
+
+			GetWorldTimerManager().SetTimer(FireDelay, this, &AWeapon::SetCanFire, RateOfFire, false);
+
 
 		}
 	}
@@ -170,7 +179,6 @@ void AWeapon::ReloadWeapon()
 	if (bCanReload)
 	{
 		int MagazineEmptySpace = MaxMagazineAmmo - CurrentMagazineAmmo;
-		//int& InventoryAmmo = OwningCharacter->CharacterInventory->InventoryRifleAmmo;
 		int InventoryAmmo = OwningCharacter->CharacterInventory->GetInventoryAmmo(WeaponType);
 
 		if (MagazineEmptySpace > 0 && InventoryAmmo != 0)
@@ -181,7 +189,6 @@ void AWeapon::ReloadWeapon()
 			if (InventoryAmmo > MagazineEmptySpace)
 			{
 				CurrentMagazineAmmo += MagazineEmptySpace;
-				//InventoryAmmo -= MagazineEmptySpace;
 				OwningCharacter->CharacterInventory->SetInventoryAmmo(WeaponType, MagazineEmptySpace);
 				MulticastReloadFX();
 
@@ -254,6 +261,14 @@ void AWeapon::ServerToggleReloadRestrictions_Implementation()
 void AWeapon::OnRep_WeaponChanged()
 {
 	OwningCharacter->TP_Gun->SetSkeletalMesh(TPWeaponMesh);
+}
+
+void AWeapon::SetCanFire()
+{
+	if (bCanFire == false)
+	{
+		bCanFire = true;
+	}
 }
 
 void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

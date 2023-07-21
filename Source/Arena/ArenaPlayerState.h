@@ -14,7 +14,7 @@ class ARENA_API AArenaPlayerState : public APlayerState
 {
 	GENERATED_BODY()
 
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
 	int PlayerScore = 0;
 
 public:

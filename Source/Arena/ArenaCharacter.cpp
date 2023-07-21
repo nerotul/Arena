@@ -220,8 +220,8 @@ float AArenaCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 	if (bIsAlive)
 	{
 		float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-		CharacterHealth->ChangeHealthValue(-DamageAmount);
 		LastDamageCauser = DamageCauser;
+		CharacterHealth->ChangeHealthValue(-DamageAmount);
 		return ActualDamage;
 	}
 	else
@@ -310,7 +310,7 @@ void AArenaCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 
 void AArenaCharacter::ServerIncrementPlayerScore_Implementation()
 {
-	if (LastDamageCauser != nullptr)
+	if (LastDamageCauser != nullptr && bIsAlive)
 	{
 		AArenaCharacter* KillerPlayer = Cast<AArenaCharacter>(LastDamageCauser);
 		AArenaPlayerState* PS = Cast<AArenaPlayerState>(KillerPlayer->GetPlayerState());

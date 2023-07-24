@@ -5,6 +5,7 @@
 #include "Components/SphereComponent.h"
 #include "ArenaCharacter.h"
 #include "InventoryComponent.h"
+#include "HealthComponent.h"
 
 // Sets default values
 APickupObject::APickupObject()
@@ -46,9 +47,56 @@ void APickupObject::Interact(AActor* Interactor)
 
 		if (IsValid(OverlappedCharacter))
 		{
-			OverlappedCharacter->CharacterInventory->AddInventoryAmmo(WeaponType, StoredAmmo);
+			switch (PickupType)
+			{
+				case PickupType::Ammo:
+				{
+					UInventoryComponent* CharacterInventory = OverlappedCharacter->CharacterInventory;
+
+					if (CharacterInventory->GetInventoryAmmo(WeaponType) < CharacterInventory->GetMaxInventoryAmmo(WeaponType))
+					{
+						CharacterInventory->AddInventoryAmmo(WeaponType, StoredAmmo);
+						SetActorHiddenInGame(true);
+						SetActorEnableCollision(false);
+						GetWorldTimerManager().SetTimer(ToggleVisibilityHandle, this, &APickupObject::ToggleVisibility, ObjectRespawnDelay, false);
+					}
+
+				}
+					break;
+				case PickupType::Armor:
+				{
+					UHealthComponent* CharacterHealth = OverlappedCharacter->CharacterHealth;
+					if (CharacterHealth->GetCurrentArmor() < CharacterHealth->GetMaxArmor())
+					{
+						CharacterHealth->ChangeArmorValue(StoredHealthOrArmor);
+						SetActorHiddenInGame(true);
+						SetActorEnableCollision(false);
+						GetWorldTimerManager().SetTimer(ToggleVisibilityHandle, this, &APickupObject::ToggleVisibility, ObjectRespawnDelay, false);
+					}
+				}
+					break;
+				case PickupType::Health:
+				{
+					UHealthComponent* CharacterHealth = OverlappedCharacter->CharacterHealth;
+					if (CharacterHealth->GetCurrentHealth() < CharacterHealth->GetMaxHealth())
+					{
+						OverlappedCharacter->CharacterHealth->ChangeHealthValue(StoredHealthOrArmor);
+						SetActorHiddenInGame(true);
+						SetActorEnableCollision(false);
+						GetWorldTimerManager().SetTimer(ToggleVisibilityHandle, this, &APickupObject::ToggleVisibility, ObjectRespawnDelay, false);
+					}
+				}
+					break;
+				default:
+					break;
+			}
 		}
 	}
+}
 
-	Destroy();
+void APickupObject::ToggleVisibility()
+{
+	SetActorHiddenInGame(false);
+	SetActorEnableCollision(true);
+
 }

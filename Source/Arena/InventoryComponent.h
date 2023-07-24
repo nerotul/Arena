@@ -29,10 +29,15 @@ public:
 	UPROPERTY(BlueprintReadOnly, Replicated)
 		int InventoryRifleAmmo = 30;
 	UPROPERTY(BlueprintReadOnly, Replicated)
+		int MaxInventoryRifleAmmo = 90;
+	UPROPERTY(BlueprintReadOnly, Replicated)
 		int InventoryRifleMagazineAmmo = 30;
+
 
 	UPROPERTY(BlueprintReadOnly, Replicated)
 		int InventorySniperAmmo = 5;
+	UPROPERTY(BlueprintReadOnly, Replicated)
+		int MaxInventorySniperAmmo = 15;
 	UPROPERTY(BlueprintReadOnly, Replicated)
 		int InventorySniperMagazineAmmo = 5;
 
@@ -44,6 +49,9 @@ public:
 
 	UFUNCTION()
 		int GetInventoryAmmo(WeaponType InWeaponType);
+
+	UFUNCTION()
+		int GetMaxInventoryAmmo(WeaponType InWeaponType);
 
 	UFUNCTION()
 		void SetInventoryMagazineAmmo(WeaponType InWeaponType, int InAmmo);

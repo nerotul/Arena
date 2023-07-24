@@ -24,11 +24,11 @@ protected:
 
 	float MaxArmor = 100.0f;
 	UPROPERTY(Replicated)
-	float CurrentArmor = MaxArmor;
+		float CurrentArmor = MaxArmor;
 
 	float MaxHealth = 100.0f;
 	UPROPERTY(Replicated)
-	float CurrentHealth = MaxHealth;
+		float CurrentHealth = MaxHealth;
 
 public:	
 	// Called every frame
@@ -36,10 +36,14 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		float GetCurrentArmor();
+	UFUNCTION(BlueprintCallable)
+		float GetMaxArmor();
 	void ChangeArmorValue(float ChangeValue);
 
 	UFUNCTION(BlueprintCallable)
 		float GetCurrentHealth();
+	UFUNCTION(BlueprintCallable)
+		float GetMaxHealth();
 	void ChangeHealthValue(float ChangeValue);
 
 	FOnCharacterDead OnCharacterDead;

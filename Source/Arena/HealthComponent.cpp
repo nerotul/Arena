@@ -40,6 +40,11 @@ float UHealthComponent::GetCurrentArmor()
 	return CurrentArmor;
 }
 
+float UHealthComponent::GetMaxArmor()
+{
+	return MaxArmor;
+}
+
 void UHealthComponent::ChangeArmorValue(float ChangeValue)
 {
 	bool bIsDamage = (ChangeValue < 0);
@@ -69,6 +74,11 @@ void UHealthComponent::ChangeArmorValue(float ChangeValue)
 float UHealthComponent::GetCurrentHealth()
 {
 	return CurrentHealth;
+}
+
+float UHealthComponent::GetMaxHealth()
+{
+	return MaxHealth;
 }
 
 void UHealthComponent::ChangeHealthValue(float ChangeValue)

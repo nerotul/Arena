@@ -10,6 +10,14 @@
 
 class USphereComponent;
 
+UENUM(BlueprintType)
+enum class PickupType : uint8
+{
+	Ammo UMETA(DisplayName = "Ammo"),
+	Armor   UMETA(DisplayName = "Armor"),
+	Health UMETA(DisplayName = "Health")
+};
+
 
 UCLASS()
 class ARENA_API APickupObject : public AActor, public IArenaInterface
@@ -34,6 +42,8 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 		USphereComponent* CollisionComponent;
 
+	UPROPERTY(EditAnywhere)
+		PickupType PickupType;
 
 	UPROPERTY(EditAnywhere)
 		WeaponType WeaponType;
@@ -41,6 +51,17 @@ public:
 	UPROPERTY(EditAnywhere)
 		int StoredAmmo = 30;
 
+	UPROPERTY(EditAnywhere)
+		float StoredHealthOrArmor = 30;
+
+
 	virtual void Interact(AActor* Interactor) override;
+
+	FTimerHandle ToggleVisibilityHandle;
+
+	void ToggleVisibility();
+
+	UPROPERTY(EditAnywhere)
+		float ObjectRespawnDelay = 3.0f;
 
 };

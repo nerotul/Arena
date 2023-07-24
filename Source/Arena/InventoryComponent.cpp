@@ -67,6 +67,23 @@ int UInventoryComponent::GetInventoryAmmo(WeaponType InWeaponType)
 	}
 }
 
+int UInventoryComponent::GetMaxInventoryAmmo(WeaponType InWeaponType)
+{
+	switch (InWeaponType)
+	{
+	case WeaponType::AR:
+		return MaxInventoryRifleAmmo;
+		break;
+	case WeaponType::Sniper:
+		return MaxInventorySniperAmmo;
+		break;
+	default:
+		return 0;
+		break;
+	}
+
+}
+
 void UInventoryComponent::SetInventoryMagazineAmmo(WeaponType InWeaponType, int InAmmo)
 {
 	switch (InWeaponType)
@@ -103,10 +120,24 @@ void UInventoryComponent::AddInventoryAmmo(WeaponType InWeaponType, int InAmmoCh
 	switch (InWeaponType)
 	{
 	case WeaponType::AR:
-		InventoryRifleAmmo += InAmmoChange;
+		if ((InventoryRifleAmmo + InAmmoChange) > MaxInventoryRifleAmmo)
+		{
+			InventoryRifleAmmo = MaxInventoryRifleAmmo;
+		}
+		else
+		{
+			InventoryRifleAmmo += InAmmoChange;
+		}
 		break;
 	case WeaponType::Sniper:
-		InventorySniperAmmo += InAmmoChange;
+		if ((InventorySniperAmmo + InAmmoChange) > MaxInventorySniperAmmo)
+		{
+			InventorySniperAmmo = MaxInventorySniperAmmo;
+		}
+		else
+		{
+			InventorySniperAmmo += InAmmoChange;
+		}
 		break;
 	default:
 		break;

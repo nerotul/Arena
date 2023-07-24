@@ -23,4 +23,7 @@ public:
 
 	UFUNCTION()
 		void IncrementPlayerScore();
+
+	UFUNCTION()
+		void DecrementPlayerScore();
 };

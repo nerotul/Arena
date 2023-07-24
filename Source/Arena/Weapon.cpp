@@ -78,7 +78,7 @@ void AWeapon::Fire(FRotator InSpawnRotation)
 				// Spawn the projectile at the muzzle
 				AArenaProjectile* Projectile = World->SpawnActor<AArenaProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
 				Projectile->ProjectileDamage = WeaponDamage;
-				Projectile->OwningCharacter = OwningCharacter;
+				IsValid(OwningCharacter) ? Projectile->OwningCharacterController = OwningCharacter->GetInstigatorController() : NULL;
 			}
 
 			CurrentMagazineAmmo -= 1;
@@ -105,7 +105,7 @@ void AWeapon::Fire(FRotator InSpawnRotation)
 				ETraceTypeQuery::TraceTypeQuery4, false, ActorsToIgnore, EDrawDebugTrace::ForDuration,
 				Hit, true, FLinearColor::Red, FLinearColor::Green, 5.0f);
 
-			UGameplayStatics::ApplyDamage(Hit.GetActor(), WeaponDamage, GetInstigatorController(), OwningCharacter, NULL);
+			UGameplayStatics::ApplyDamage(Hit.GetActor(), WeaponDamage, OwningCharacter->GetInstigatorController(), this, NULL);
 			
 			CurrentMagazineAmmo -= 1;
 			MulticastOnFireFX();

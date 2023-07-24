@@ -220,7 +220,7 @@ float AArenaCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 	if (bIsAlive)
 	{
 		float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-		LastDamageCauser = DamageCauser;
+		LastDamageInstigator = EventInstigator;
 		CharacterHealth->ChangeHealthValue(-DamageAmount);
 		return ActualDamage;
 	}
@@ -310,12 +310,14 @@ void AArenaCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 
 void AArenaCharacter::ServerIncrementPlayerScore_Implementation()
 {
-	if (LastDamageCauser != nullptr && bIsAlive)
+	if (LastDamageInstigator != nullptr && bIsAlive)
 	{
-		AArenaCharacter* KillerPlayer = Cast<AArenaCharacter>(LastDamageCauser);
-		AArenaPlayerState* PS = Cast<AArenaPlayerState>(KillerPlayer->GetPlayerState());
-		PS->IncrementPlayerScore();
+		AArenaPlayerState* PS = Cast<AArenaPlayerState>(LastDamageInstigator->PlayerState);
+		if (PS)
+		{
+			this->GetInstigatorController() == LastDamageInstigator ? PS->DecrementPlayerScore() : PS->IncrementPlayerScore();
 
+		}
 	}
 
 	MulticastKillCharacter();

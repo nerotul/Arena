@@ -39,7 +39,7 @@ public:
 		float ProjectileDamage = 10;
 
 	UPROPERTY()
-		AArenaCharacter* OwningCharacter = nullptr;
+		AController* OwningCharacterController = nullptr;
 
 };
 

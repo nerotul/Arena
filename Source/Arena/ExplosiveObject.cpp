@@ -34,7 +34,7 @@ void AExplosiveObject::Tick(float DeltaTime)
 float AExplosiveObject::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	ObjectHealth -= DamageAmount;
-	LastDamageCauser = DamageCauser;
+	LastDamageCauserController = EventInstigator;
 
 	if (ObjectHealth < 0)
 	{
@@ -48,7 +48,7 @@ void AExplosiveObject::Explode()
 {
 	TArray<AActor*> IgnoredActors;
 	IgnoredActors.Add(this);
-	UGameplayStatics::ApplyRadialDamage(GetWorld(), ExplosionDamage, GetActorLocation(), ExplosionRadius, NULL, IgnoredActors, LastDamageCauser, nullptr, true);
+	UGameplayStatics::ApplyRadialDamage(GetWorld(), ExplosionDamage, GetActorLocation(), ExplosionRadius, NULL, IgnoredActors, this, LastDamageCauserController, true);
 
 	MulticastExplodeFX();
 }

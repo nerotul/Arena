@@ -14,6 +14,11 @@ void AArenaPlayerState::IncrementPlayerScore()
 	PlayerScore++;
 }
 
+void AArenaPlayerState::DecrementPlayerScore()
+{
+	PlayerScore--;
+}
+
 void AArenaPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

@@ -98,6 +98,21 @@ int UInventoryComponent::GetInventoryMagazineAmmo(WeaponType InWeaponType)
 	}
 }
 
+void UInventoryComponent::AddInventoryAmmo(WeaponType InWeaponType, int InAmmoChange)
+{
+	switch (InWeaponType)
+	{
+	case WeaponType::AR:
+		InventoryRifleAmmo += InAmmoChange;
+		break;
+	case WeaponType::Sniper:
+		InventorySniperAmmo += InAmmoChange;
+		break;
+	default:
+		break;
+	}
+}
+
 void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

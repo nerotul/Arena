@@ -51,4 +51,7 @@ public:
 	UFUNCTION()
 		int GetInventoryMagazineAmmo(WeaponType InWeaponType);
 
+	UFUNCTION()
+		void AddInventoryAmmo(WeaponType InWeaponType, int InAmmoChange);
+
 };

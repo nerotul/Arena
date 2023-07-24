@@ -35,10 +35,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Health, Replicated)
 		float ObjectHealth = 10.0f;
 
-	UPROPERTY(EditDefaultsOnly, Category = Damage)
+	UPROPERTY(EditAnywhere, Category = Damage)
 		float ExplosionDamage = 10.0f;
 
-	UPROPERTY(EditDefaultsOnly, Category = Damage)
+	UPROPERTY(EditAnywhere, Category = Damage)
 		float ExplosionRadius = 100.0f;
 
 	UPROPERTY(BlueprintReadOnly)

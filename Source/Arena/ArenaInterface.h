@@ -25,4 +25,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 		FRotator GetCameraRotation();
+
+	virtual void Interact(AActor* Interactor);
 };

@@ -24,6 +24,8 @@ AArenaCharacter::AArenaCharacter()
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AArenaCharacter::OnBeginOverlap);
+
 
 	// set our turn rates for input
 	BaseTurnRate = 45.f;
@@ -321,4 +323,14 @@ void AArenaCharacter::ServerIncrementPlayerScore_Implementation()
 	}
 
 	MulticastKillCharacter();
+}
+
+void AArenaCharacter::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	IArenaInterface* Interface = Cast<IArenaInterface>(OtherActor);
+	if (Interface)
+	{
+		Interface->Interact(this);
+	}
+
 }

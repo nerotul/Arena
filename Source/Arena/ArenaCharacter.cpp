@@ -243,16 +243,11 @@ void AArenaCharacter::MulticastKillCharacter_Implementation()
 	TP_Mesh->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	CharacterWeapon->Destroy();
 	Mesh1P->DestroyComponent();
-	GetWorldTimerManager().SetTimer(DestroyActorHandle, this, &AArenaCharacter::CallDestroy, 5.0f, false);
+	GetWorldTimerManager().SetTimer(DestroyActorHandle, this, &AArenaCharacter::CallDestroy, BodyDisappearanceDelay, false);
 
 	if (HasAuthority())
 	{
-		AGameModeBase* GM = GetWorld()->GetAuthGameMode();
-		if (AArenaGameMode* GameMode = Cast<AArenaGameMode>(GM))
-		{
-			AController* Test = GetController();
-			GameMode->RespawnCharacter(GetController());
-		}
+		GetWorldTimerManager().SetTimer(RespawnCharacterHandle, this, &AArenaCharacter::RespawnCharacter, RespawnCharacterDelay, false);
 	}
 }
 
@@ -333,4 +328,14 @@ void AArenaCharacter::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor
 		Interface->Interact(this);
 	}
 
+}
+
+void AArenaCharacter::RespawnCharacter()
+{
+	AGameModeBase* GM = GetWorld()->GetAuthGameMode();
+	if (AArenaGameMode* GameMode = Cast<AArenaGameMode>(GM))
+	{
+		AController* Test = GetController();
+		GameMode->RespawnCharacter(GetController());
+	}
 }

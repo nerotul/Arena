@@ -33,6 +33,7 @@ void AArenaGameMode::RespawnCharacter(AController* CharacterController)
 			if (Pawn)
 			{
 				CharacterController->Possess(Pawn);
+				
 			}
 		}
 	}

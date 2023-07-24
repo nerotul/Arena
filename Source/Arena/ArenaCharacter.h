@@ -162,5 +162,15 @@ public:
 	UFUNCTION()
 		void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	void RespawnCharacter();
+
+	FTimerHandle RespawnCharacterHandle;
+
+	UPROPERTY(EditDefaultsOnly)
+		float BodyDisappearanceDelay = 5.0f;
+
+	UPROPERTY(EditDefaultsOnly)
+		float RespawnCharacterDelay = 3.0f;
+
 };
 

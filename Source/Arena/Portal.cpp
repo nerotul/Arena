@@ -5,6 +5,7 @@
 #include "Components/BoxComponent.h"
 #include "Engine/TargetPoint.h"
 #include "ArenaCharacter.h"
+#include "Components/PointLightComponent.h"
 
 // Sets default values
 APortal::APortal()
@@ -14,6 +15,9 @@ APortal::APortal()
 
 	CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision Component"));
 	RootComponent = CollisionBox;
+
+	PointLight = CreateDefaultSubobject<UPointLightComponent>(TEXT("Light Component"));
+	PointLight->SetupAttachment(CollisionBox);
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Static Mesh"));
 	Mesh->SetupAttachment(CollisionBox);

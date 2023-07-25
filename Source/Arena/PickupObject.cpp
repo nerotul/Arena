@@ -3,6 +3,7 @@
 
 #include "PickupObject.h"
 #include "Components/SphereComponent.h"
+#include "Components/PointLightComponent.h"
 #include "ArenaCharacter.h"
 #include "InventoryComponent.h"
 #include "HealthComponent.h"
@@ -22,6 +23,9 @@ APickupObject::APickupObject()
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh Component"));
 	MeshComponent->SetupAttachment(CollisionComponent);
+
+	PointLight = CreateDefaultSubobject<UPointLightComponent>(TEXT("Point Light"));
+	PointLight->SetupAttachment(CollisionComponent);
 
 }
 

@@ -9,6 +9,7 @@
 #include "PickupObject.generated.h"
 
 class USphereComponent;
+class UPointLightComponent;
 
 UENUM(BlueprintType)
 enum class PickupType : uint8
@@ -37,10 +38,13 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(EditDefaultsOnly)
-		UStaticMeshComponent* MeshComponent;
+		UStaticMeshComponent* MeshComponent = nullptr;
 
 	UPROPERTY(EditDefaultsOnly)
-		USphereComponent* CollisionComponent;
+		USphereComponent* CollisionComponent = nullptr;
+
+	UPROPERTY(EditDefaultsOnly)
+		UPointLightComponent* PointLight = nullptr;
 
 	UPROPERTY(EditAnywhere)
 		PickupType PickupType;

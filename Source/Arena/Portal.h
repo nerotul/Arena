@@ -10,6 +10,7 @@
 class UStaticMeshComponent;
 class UBoxComponent;
 class ATargetPoint;
+class UPointLightComponent;
 
 UCLASS()
 class ARENA_API APortal : public AActor, public IArenaInterface
@@ -30,6 +31,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 		UStaticMeshComponent* Mesh = nullptr;
+
+	UPROPERTY(EditDefaultsOnly)
+		UPointLightComponent* PointLight = nullptr;
 
 	UPROPERTY(EditDefaultsOnly)
 		UBoxComponent* CollisionBox = nullptr;;

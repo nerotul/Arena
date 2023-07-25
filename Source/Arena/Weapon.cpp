@@ -77,7 +77,7 @@ void AWeapon::Fire(FRotator InSpawnRotation)
 
 				// Spawn the projectile at the muzzle
 				AArenaProjectile* Projectile = World->SpawnActor<AArenaProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
-				Projectile->ProjectileDamage = WeaponDamage;
+				IsValid(Projectile) ? Projectile->ProjectileDamage = WeaponDamage : NULL;
 				IsValid(OwningCharacter) ? Projectile->OwningCharacterController = OwningCharacter->GetInstigatorController() : NULL;
 			}
 

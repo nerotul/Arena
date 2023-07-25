@@ -238,7 +238,10 @@ void AArenaCharacter::MulticastKillCharacter_Implementation()
 
 	USkeletalMeshComponent* TP_Mesh = ACharacter::GetMesh();
 
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	//GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	//GetCapsuleComponent()->SetMobility(EComponentMobility::Stationary);
+	RootComponent = FirstPersonCameraComponent;
+	GetCapsuleComponent()->DestroyComponent();
 	TP_Mesh->SetSimulatePhysics(true);
 	TP_Mesh->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	CharacterWeapon->Destroy();

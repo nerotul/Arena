@@ -48,7 +48,7 @@ void APortal::Interact(AActor* Interactor)
 		{
 			FVector TravelLocation = PortalToLocation->GetActorLocation();
 			FRotator TravelRotation = PortalToLocation->GetActorRotation();
-			OverlappedCharacter->SetActorRotation(TravelRotation);
+			OverlappedCharacter->GetController()->SetControlRotation(TravelRotation);
 			OverlappedCharacter->SetActorLocation(TravelLocation, false, nullptr, ETeleportType::TeleportPhysics);
 		}
 	}

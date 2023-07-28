@@ -40,7 +40,7 @@ void APortal::Tick(float DeltaTime)
 
 void APortal::Interact(AActor* Interactor)
 {
-	if (IsValid(Interactor))
+	if (IsValid(Interactor) && HasAuthority())
 	{
 		AArenaCharacter* OverlappedCharacter = Cast<AArenaCharacter>(Interactor);
 

@@ -13,7 +13,7 @@ UHealthComponent::UHealthComponent()
 
 	// ...
 
-	SetIsReplicated(true);
+	SetIsReplicatedByDefault(true);
 }
 
 

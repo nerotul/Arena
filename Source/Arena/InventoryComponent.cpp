@@ -14,7 +14,7 @@ UInventoryComponent::UInventoryComponent()
 
 	// ...
 
-	SetIsReplicated(true);
+	SetIsReplicatedByDefault(true);
 }
 
 

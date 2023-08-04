@@ -75,7 +75,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FX)
 		USoundBase* ReloadSound = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, Category = WeaponType)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = WeaponType)
 		WeaponType WeaponType = WeaponType::AR;
 
 

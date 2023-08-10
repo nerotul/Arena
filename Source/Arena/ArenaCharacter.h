@@ -62,7 +62,7 @@ public:
 
 protected:
 	/** Fires a projectile. */
-	UFUNCTION(Server, Reliable)
+	UFUNCTION(BlueprintCallable, Server, Reliable)
 		void ServerOnFire();
 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;

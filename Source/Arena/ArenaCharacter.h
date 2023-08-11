@@ -104,8 +104,9 @@ public:
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
 	/** Returns FirstPersonCameraComponent subobject **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
-
-	bool bIsAlive = true;
+	
+	UPROPERTY(BlueprintReadOnly)
+		bool bIsAlive = true;
 
 	UPROPERTY(BlueprintReadOnly)
 		UHealthComponent* CharacterHealth;

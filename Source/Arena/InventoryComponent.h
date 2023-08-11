@@ -26,9 +26,9 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	UPROPERTY(BlueprintReadOnly, Replicated)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated)
 		int InventoryRifleAmmo = 30;
-	UPROPERTY(BlueprintReadOnly, Replicated)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated)
 		int MaxInventoryRifleAmmo = 90;
 	UPROPERTY(BlueprintReadOnly, Replicated)
 		int InventoryRifleMagazineAmmo = 30;

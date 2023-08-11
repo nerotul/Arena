@@ -202,7 +202,14 @@ void AArenaCharacter::ServerOnFire_Implementation()
 {
 	if (bIsAlive && CharacterWeapon)
 	{
-		CharacterWeapon->Fire(GetControlRotation());
+		if (CharacterWeapon->CurrentMagazineAmmo == 0)
+		{
+			ServerReloadWeapon();
+		}
+		else
+		{
+			CharacterWeapon->Fire(GetControlRotation());
+		}
 
 	}
 }

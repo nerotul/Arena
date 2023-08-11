@@ -65,8 +65,21 @@ void AExplosiveObject::MulticastExplodeFX_Implementation()
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, GetActorLocation());
 	}
 
-	HasAuthority() ? Destroy() : NULL;
+	if (HasAuthority())
+	{
+		SetActorHiddenInGame(true);
+		SetActorEnableCollision(false);
+		GetWorldTimerManager().SetTimer(ToggleVisibilityHandle, this, &AExplosiveObject::ToggleVisibility, ObjectRespawnDelay, false);
+
+	}
 	
+}
+
+void AExplosiveObject::ToggleVisibility()
+{
+	SetActorHiddenInGame(false);
+	SetActorEnableCollision(true);
+
 }
 
 void AExplosiveObject::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

@@ -53,4 +53,12 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 		void MulticastExplodeFX();
 
+	FTimerHandle ToggleVisibilityHandle;
+
+	void ToggleVisibility();
+
+	UPROPERTY(EditAnywhere)
+		float ObjectRespawnDelay = 3.0f;
+
+
 };

@@ -21,19 +21,33 @@ AArenaGameMode::AArenaGameMode()
 	PlayerStateClass = AArenaPlayerState::StaticClass();
 }
 
-void AArenaGameMode::RespawnCharacter(AController* CharacterController)
+void AArenaGameMode::RespawnCharacter(AController* CharacterController, bool InIsNPC)
 {
 	if (CharacterController)
 	{
 		if (HasAuthority())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Respawning Character"));
-			FVector Location = FVector(ChoosePlayerStart(CharacterController)->GetActorLocation());
-			APawn* Pawn = GetWorld()->SpawnActor<APawn>(DefaultPawnClass, Location, FRotator::ZeroRotator);
-			if (Pawn)
+			if (!InIsNPC)
 			{
-				CharacterController->Possess(Pawn);
-				
+				UE_LOG(LogTemp, Warning, TEXT("Respawning Character"));
+				FVector Location = FVector(ChoosePlayerStart(CharacterController)->GetActorLocation());
+				APawn* Pawn = GetWorld()->SpawnActor<APawn>(DefaultPawnClass, Location, FRotator::ZeroRotator);
+				if (Pawn)
+				{
+					CharacterController->Possess(Pawn);
+
+				}
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Respawning Character"));
+				FVector Location = FVector(ChoosePlayerStart(CharacterController)->GetActorLocation());
+				APawn* Pawn = GetWorld()->SpawnActor<APawn>(DefaultNPC, Location, FRotator::ZeroRotator);
+				if (Pawn)
+				{
+					CharacterController->Possess(Pawn);
+
+				}
 			}
 		}
 	}

@@ -337,6 +337,6 @@ void AArenaCharacter::RespawnCharacter()
 	if (AArenaGameMode* GameMode = Cast<AArenaGameMode>(GM))
 	{
 		AController* Test = GetController();
-		GameMode->RespawnCharacter(GetController());
+		GameMode->RespawnCharacter(GetController(), bIsNPC);
 	}
 }

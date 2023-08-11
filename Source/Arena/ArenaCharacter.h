@@ -172,5 +172,8 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 		float RespawnCharacterDelay = 3.0f;
 
+	UPROPERTY(EditDefaultsOnly)
+		bool bIsNPC = false;
+
 };
 

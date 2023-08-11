@@ -43,12 +43,10 @@ void AArenaProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, U
 	{
 		if (HasAuthority())
 		{
-			if (OtherComp->IsSimulatingPhysics())
+			if (OtherActor->GetInstigatorController() != OwningCharacterController)
 			{
-				OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
+				UGameplayStatics::ApplyDamage(OtherActor, ProjectileDamage, OwningCharacterController, this, NULL);
 			}
-			UGameplayStatics::ApplyDamage(OtherActor, ProjectileDamage, OwningCharacterController, this, NULL);
-
 		}
 		
 		Destroy();

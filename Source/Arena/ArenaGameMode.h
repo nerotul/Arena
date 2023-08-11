@@ -14,7 +14,10 @@ class AArenaGameMode : public AGameModeBase
 public:
 	AArenaGameMode();
 
-	void RespawnCharacter(AController* CharacterController);
+	void RespawnCharacter(AController* CharacterController, bool InIsNPC);
+
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<AActor> DefaultNPC = nullptr;
 
 };
 

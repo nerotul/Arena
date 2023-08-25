@@ -37,6 +37,9 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 		USkeletalMeshComponent* Mesh1P;
 
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
 protected:
 	virtual void BeginPlay();
 
@@ -175,6 +178,14 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 		bool bIsNPC = false;
+
+		bool bIsFireInputPressed = false;
+
+	UFUNCTION(Server, Unreliable)
+	void ServerFireInputPressed();
+
+	UFUNCTION(Server, Unreliable)
+	void ServerFireInputReleased();
 
 };
 

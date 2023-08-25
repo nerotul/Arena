@@ -117,9 +117,12 @@ public:
 	FTimerHandle FireDelay;
 
 	UFUNCTION()
-		void SetCanFire();
+		void ToggleFireDelay();
 
 	UPROPERTY(EditDefaultsOnly)
 		float RateOfFire = 1;
+
+	UPROPERTY(Replicated)
+		bool bIsFireDelayActive = false;
 
 };

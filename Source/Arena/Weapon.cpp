@@ -60,9 +60,9 @@ void AWeapon::Fire(FRotator InSpawnRotation)
 	if (bIsPhysicalProjectile && ProjectileClass != nullptr)
 	{
 		// try and fire a projectile
-		if (CurrentMagazineAmmo > 0 && bCanFire)
+		if (CurrentMagazineAmmo > 0 && bCanFire && bIsFireDelayActive == false)
 		{
-			bCanFire = false;
+			bIsFireDelayActive = true;
 
 			UWorld* const World = GetWorld();
 			if (World != nullptr)
@@ -88,14 +88,14 @@ void AWeapon::Fire(FRotator InSpawnRotation)
 			CurrentMagazineAmmo -= 1;
 			MulticastOnFireFX();
 
-			GetWorldTimerManager().SetTimer(FireDelay, this, &AWeapon::SetCanFire, RateOfFire, false);
+			GetWorldTimerManager().SetTimer(FireDelay, this, &AWeapon::ToggleFireDelay, RateOfFire, false);
 		}
 	}
 	else
 	{
-		if (CurrentMagazineAmmo > 0 && bCanFire)
+		if (CurrentMagazineAmmo > 0 && bCanFire, bIsFireDelayActive == false)
 		{
-			bCanFire = false;
+			bIsFireDelayActive = true;
 
 			FVector StartLocation = OwningCharacter->FirstPersonCameraComponent->GetComponentLocation();
 			FVector EndLocation;
@@ -114,7 +114,7 @@ void AWeapon::Fire(FRotator InSpawnRotation)
 			CurrentMagazineAmmo -= 1;
 			MulticastOnFireFX();
 
-			GetWorldTimerManager().SetTimer(FireDelay, this, &AWeapon::SetCanFire, RateOfFire, false);
+			GetWorldTimerManager().SetTimer(FireDelay, this, &AWeapon::ToggleFireDelay, RateOfFire, false);
 
 
 		}
@@ -268,11 +268,11 @@ void AWeapon::OnRep_WeaponChanged()
 	OwningCharacter->TP_Gun->SetSkeletalMesh(TPWeaponMesh);
 }
 
-void AWeapon::SetCanFire()
+void AWeapon::ToggleFireDelay()
 {
-	if (bCanFire == false)
+	if (bIsFireDelayActive == true)
 	{
-		bCanFire = true;
+		bIsFireDelayActive = false;
 	}
 }
 
@@ -284,4 +284,5 @@ void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 	DOREPLIFETIME(AWeapon, OwningCharacter);
 	DOREPLIFETIME(AWeapon, bCanFire);
 	DOREPLIFETIME(AWeapon, bCanReload);
+	DOREPLIFETIME(AWeapon, bIsFireDelayActive);
 }

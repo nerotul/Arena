@@ -76,6 +76,18 @@ void AArenaCharacter::BeginPlay()
 	}
 }
 
+// Called every frame
+void AArenaCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	
+	if (bIsNPC == false)
+	{
+		ServerOnFire();
+	}
+}
+
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 
@@ -89,7 +101,9 @@ void AArenaCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInp
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
 	// Bind fire event
-	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AArenaCharacter::ServerOnFire);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AArenaCharacter::ServerFireInputPressed);
+	PlayerInputComponent->BindAction("Fire", IE_Released, this, &AArenaCharacter::ServerFireInputReleased);
+
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &AArenaCharacter::ServerReloadWeapon);
 
 	// Bind movement events
@@ -198,19 +212,46 @@ void AArenaCharacter::ServerInitWeapon_Implementation()
 	}
 }
 
+void AArenaCharacter::ServerFireInputPressed_Implementation()
+{
+	bIsFireInputPressed = true;
+}
+
+void AArenaCharacter::ServerFireInputReleased_Implementation()
+{
+	bIsFireInputPressed = false;
+}
+
 void AArenaCharacter::ServerOnFire_Implementation()
 {
-	if (bIsAlive && CharacterWeapon)
+	if (bIsFireInputPressed == true)
 	{
-		if (CharacterWeapon->CurrentMagazineAmmo == 0)
+		if (bIsAlive && CharacterWeapon)
 		{
-			ServerReloadWeapon();
+			if (CharacterWeapon->CurrentMagazineAmmo == 0)
+			{
+				ServerReloadWeapon();
+			}
+			else
+			{
+				CharacterWeapon->Fire(GetControlRotation());
+			}
 		}
-		else
+	}
+	
+	if (bIsNPC == true)
+	{
+		if (bIsAlive && CharacterWeapon)
 		{
-			CharacterWeapon->Fire(GetControlRotation());
+			if (CharacterWeapon->CurrentMagazineAmmo == 0)
+			{
+				ServerReloadWeapon();
+			}
+			else
+			{
+				CharacterWeapon->Fire(GetControlRotation());
+			}
 		}
-
 	}
 }
 

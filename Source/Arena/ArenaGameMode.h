@@ -19,6 +19,11 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 		TSubclassOf<AActor> DefaultNPC = nullptr;
 
+	UFUNCTION(BlueprintCallable)
+	bool IsSpawnPointSafe(FVector SphereLocation);
+
+	UPROPERTY(EditDefaultsOnly)
+	float SpawnCheckRadius = 60000.0f;
 };
 
 

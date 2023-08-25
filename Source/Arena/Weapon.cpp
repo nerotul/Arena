@@ -93,7 +93,7 @@ void AWeapon::Fire(FRotator InSpawnRotation)
 	}
 	else
 	{
-		if (CurrentMagazineAmmo > 0 && bCanFire, bIsFireDelayActive == false)
+		if (CurrentMagazineAmmo > 0 && bCanFire && bIsFireDelayActive == false)
 		{
 			bIsFireDelayActive = true;
 

@@ -10,6 +10,7 @@ ADropObject::ADropObject()
 	PrimaryActorTick.bCanEverTick = true;
 
 	ShellMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Shell"));
+	SetRootComponent(ShellMesh);
 }
 
 // Called when the game starts or when spawned

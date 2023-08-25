@@ -23,7 +23,7 @@ public:
 	bool IsSpawnPointSafe(FVector SphereLocation);
 
 	UPROPERTY(EditDefaultsOnly)
-	float SpawnCheckRadius = 60000.0f;
+	float SpawnCheckRadius = 1000.0f;
 };
 
 

@@ -32,30 +32,33 @@ void AArenaGameMode::RespawnCharacter(AController* CharacterController, bool InI
 			{
 				//UE_LOG(LogTemp, Warning, TEXT("Respawning Character"));
 				FVector Location = FVector(ChoosePlayerStart(CharacterController)->GetActorLocation());
+				do
+				{
+					Location = FVector(ChoosePlayerStart(CharacterController)->GetActorLocation());
+
+				} while (IsSpawnPointSafe(Location) == false);
+
 				APawn* Pawn = GetWorld()->SpawnActor<APawn>(DefaultPawnClass, Location, FRotator::ZeroRotator);
-				if (Pawn && IsSpawnPointSafe(Location) == true)
+
+				if (Pawn)
 				{
 					CharacterController->Possess(Pawn);
-				}
-				else
-				{
-
 				}
 			}
 			else
 			{
 				//UE_LOG(LogTemp, Warning, TEXT("Respawning Character"));
 				FVector Location = FVector(ChoosePlayerStart(CharacterController)->GetActorLocation());
-				APawn* Pawn = GetWorld()->SpawnActor<APawn>(DefaultNPC, Location, FRotator::ZeroRotator);
-				if (Pawn && IsSpawnPointSafe(Location) == true)
+				if (IsSpawnPointSafe(Location) == true)
 				{
-					CharacterController->Possess(Pawn);
-				}
-				else
-				{
+					APawn* Pawn = GetWorld()->SpawnActor<APawn>(DefaultNPC, Location, FRotator::ZeroRotator);
+
+					if (Pawn)
+					{
+						CharacterController->Possess(Pawn);
+					}
 
 				}
-
 			}
 		}
 	}

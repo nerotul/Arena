@@ -223,9 +223,7 @@ void AWeapon::MulticastReloadFX_Implementation()
 
 		if (AnimInstance != nullptr)
 		{
-			AnimInstance->Montage_Play(OwningCharacter->TP_ReloadAnimation, 1.f);
-			float AnimLength = OwningCharacter->TP_ReloadAnimation->GetPlayLength();
-			GetWorldTimerManager().SetTimer(ReloadTimerHandle, this, &AWeapon::ServerToggleReloadRestrictions, AnimLength, false);
+			AnimInstance->Montage_Play(OwningCharacter->TP_ReloadAnimation, 1.5f);
 
 		}
 	}
@@ -237,6 +235,8 @@ void AWeapon::MulticastReloadFX_Implementation()
 		if (AnimInstance != nullptr)
 		{
 			AnimInstance->Montage_Play(OwningCharacter->FP_ReloadAnimation, 1.f);
+			float AnimLength = OwningCharacter->FP_ReloadAnimation->GetPlayLength();
+			GetWorldTimerManager().SetTimer(ReloadTimerHandle, this, &AWeapon::ServerToggleReloadRestrictions, AnimLength, false);
 
 		}
 	}

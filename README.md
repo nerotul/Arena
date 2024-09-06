@@ -1,5 +1,6 @@
 # Arena
-The game is a multiplayer FFA arena-style FPS, which objective is to get the highest score.
+The game is a multiplayer FFA arena-style FPS, which objective is to get the highest score.   
+Developed with Unreal Engine 4.27
 
 ## Main features
 - Multiplayer lobby system
